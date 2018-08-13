@@ -53,7 +53,7 @@ describe("/Home Directory", () => {
 });
 
 describe("/POST request", () => {
-  it("should put a question in the database", done => {
+  it("should post a question in the database", done => {
     const que = {
       question: "The Lord of the Rings",
       answers: []
@@ -66,6 +66,37 @@ describe("/POST request", () => {
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
+        done();
+      });
+  });
+
+  it("should post an answer in the database", done => {
+    const ans = {
+      answer: "that is what it is"
+    };
+
+    chai
+      .request(app)
+      .post("/api/v1/questions/2/answers")
+      .send(ans)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+  
+   it("should return an error invalid id", done => {
+    const ans = {
+      answer: "that is what it is"
+    };
+
+    chai
+      .request(app)
+      .post("/api/v1/questions/6/answers")
+      .send(ans)
+      .end((err, res) => {
+        res.should.have.status(404);
         done();
       });
   });

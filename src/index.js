@@ -31,6 +31,18 @@ app.post("/api/v1/questions", (req, res) => {
   res.send(question);
 });
 
+app.post("/api/v1/questions/:id/answers", (req, res) => {
+  const que = validateId(parseInt(req.params.id));
+  if (!que)
+    return res.status(404).send("The question with the given ID was not found");
+  const ans = {
+    vote: 0,
+    response: req.body.answer
+  };
+  que.answers.push(ans);
+  res.send(que);
+});
+
 app.listen(3000);
 console.log("listening on port 3000 ......");
 
