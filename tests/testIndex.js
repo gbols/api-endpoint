@@ -51,3 +51,22 @@ describe("/Home Directory", () => {
       });
   });
 });
+
+describe("/POST request", () => {
+  it("should put a question in the database", done => {
+    const que = {
+      question: "The Lord of the Rings",
+      answers: []
+    };
+
+    chai
+      .request(app)
+      .post("/api/v1/questions")
+      .send(que)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+});
