@@ -29,4 +29,75 @@ describe("/Home Directory", () => {
         done();
       });
   });
+
+  it("it should return a object", done => {
+    chai
+      .request(app)
+      .get("/api/v1/questions/2")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+
+  it("it should be an error", done => {
+    chai
+      .request(app)
+      .get("/api/v1/questions/4")
+      .end((err, res) => {
+        res.should.have.status(404);
+        done();
+      });
+  });
+});
+
+describe("/POST request", () => {
+  it("should post a question in the database", done => {
+    const que = {
+      question: "The Lord of the Rings",
+      answers: []
+    };
+
+    chai
+      .request(app)
+      .post("/api/v1/questions")
+      .send(que)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+
+  it("should post an answer in the database", done => {
+    const ans = {
+      answer: "that is what it is"
+    };
+
+    chai
+      .request(app)
+      .post("/api/v1/questions/2/answers")
+      .send(ans)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+  
+   it("should return an error invalid id", done => {
+    const ans = {
+      answer: "that is what it is"
+    };
+
+    chai
+      .request(app)
+      .post("/api/v1/questions/6/answers")
+      .send(ans)
+      .end((err, res) => {
+        res.should.have.status(404);
+        done();
+      });
+  });
 });
