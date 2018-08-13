@@ -29,4 +29,25 @@ describe("/Home Directory", () => {
         done();
       });
   });
+
+  it("it should return a object", done => {
+    chai
+      .request(app)
+      .get("/api/v1/questions/2")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+
+  it("it should be an error", done => {
+    chai
+      .request(app)
+      .get("/api/v1/questions/4")
+      .end((err, res) => {
+        res.should.have.status(404);
+        done();
+      });
+  });
 });
