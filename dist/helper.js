@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.validPost = exports.validateId = undefined;
 
 var _model = require("./model");
 
@@ -17,9 +16,4 @@ var validateId = function validateId(id) {
   });
 };
 
-var validPost = function validPost(input) {
-  if (typeof input === "string" && input.length > 10) return true;
-};
-
-exports.validateId = validateId;
-exports.validPost = validPost;
+exports.default = validateId;

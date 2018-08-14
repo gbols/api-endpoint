@@ -55,7 +55,8 @@ app.post("/api/v1/questions/:id/answers", function (req, res) {
   res.send(que);
 });
 
-app.listen(3000);
+var port = process.env.PORT || 3000;
+app.listen(port);
 console.log("listening on port 3000 ......");
 
 exports.default = app;

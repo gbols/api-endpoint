@@ -15,9 +15,6 @@
     "es6",
     "testing"
   ],
-  "engine": {
-    "node": "0.12.2"
-  },
   "author": "olagunju gbolahan",
   "license": "ISC",
   "devDependencies": {
