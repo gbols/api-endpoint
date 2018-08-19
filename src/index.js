@@ -18,7 +18,7 @@ app.get("/api/v1/questions/:id", (req, res) => {
   const que = validateId(parseInt(req.params.id));
   if (!que)
     return res.status(404).send("The question with the given ID was not found");
-  res.send(que);
+  res.send(data[req.params.id - 1]);
 });
 
 app.post("/api/v1/questions", (req, res) => {
@@ -39,8 +39,8 @@ app.post("/api/v1/questions/:id/answers", (req, res) => {
     vote: 0,
     response: req.body.answer
   };
-  que.answers.push(ans);
-  res.send(que);
+  data[req.params.id -1].answers.push(ans);
+  res.send(ans);
 });
 
 const port = process.env.PORT || 3000;

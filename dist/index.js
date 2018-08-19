@@ -31,7 +31,7 @@ app.get("/api/v1/questions", function (req, res) {
 app.get("/api/v1/questions/:id", function (req, res) {
   var que = (0, _helper.validateId)(parseInt(req.params.id));
   if (!que) return res.status(404).send("The question with the given ID was not found");
-  res.send(que);
+  res.send(_model2.default[req.params.id - 1]);
 });
 
 app.post("/api/v1/questions", function (req, res) {
@@ -51,8 +51,8 @@ app.post("/api/v1/questions/:id/answers", function (req, res) {
     vote: 0,
     response: req.body.answer
   };
-  que.answers.push(ans);
-  res.send(que);
+  _model2.default[req.params.id - 1].answers.push(ans);
+  res.send(ans);
 });
 
 var port = process.env.PORT || 3000;
