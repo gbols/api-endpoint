@@ -12,9 +12,9 @@ var _model = require("./model");
 
 var _model2 = _interopRequireDefault(_model);
 
-var _helper = require("./helper");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import { validateId } from "./helper";
 
 var app = (0, _express2.default)();
 
@@ -29,8 +29,10 @@ app.get("/api/v1/questions", function (req, res) {
 });
 
 app.get("/api/v1/questions/:id", function (req, res) {
-  var que = (0, _helper.validateId)(parseInt(req.params.id));
-  if (!que) return res.status(404).send("The question with the given ID was not found");
+  var ques = _model2.default.find(function (que) {
+    return Number(que.id) === Number(req.params.id);
+  });
+  if (!ques) return res.status(404).send("The question with the given ID was not found");
   res.send(_model2.default[req.params.id - 1]);
 });
 
@@ -45,8 +47,10 @@ app.post("/api/v1/questions", function (req, res) {
 });
 
 app.post("/api/v1/questions/:id/answers", function (req, res) {
-  var que = (0, _helper.validateId)(parseInt(req.params.id));
-  if (!que) return res.status(404).send("The question with the given ID was not found");
+  var ques = _model2.default.find(function (que) {
+    return que.id === parseInt(req.params.id);
+  });
+  if (!ques) return res.status(404).send("The question with the given ID was not found");
   var ans = {
     vote: 0,
     response: req.body.answer

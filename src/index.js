@@ -1,6 +1,6 @@
 import express from "express";
 import data from "./model";
-import { validateId } from "./helper";
+// import { validateId } from "./helper";
 
 const app = express();
 
@@ -15,8 +15,8 @@ app.get("/api/v1/questions", (req, res) => {
 });
 
 app.get("/api/v1/questions/:id", (req, res) => {
-  const que = validateId(parseInt(req.params.id));
-  if (!que)
+  const ques = data.find(que => Number(que.id) === Number(req.params.id));
+  if (!ques)
     return res.status(404).send("The question with the given ID was not found");
   res.send(data[req.params.id - 1]);
 });
@@ -32,14 +32,14 @@ app.post("/api/v1/questions", (req, res) => {
 });
 
 app.post("/api/v1/questions/:id/answers", (req, res) => {
-  const que = validateId(parseInt(req.params.id));
-  if (!que)
+  const ques = data.find(que => que.id === parseInt(req.params.id));
+  if (!ques)
     return res.status(404).send("The question with the given ID was not found");
   const ans = {
     vote: 0,
     response: req.body.answer
   };
-  data[req.params.id -1].answers.push(ans);
+  data[req.params.id - 1].answers.push(ans);
   res.send(ans);
 });
 
