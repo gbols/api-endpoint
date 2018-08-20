@@ -12,6 +12,18 @@
     "coveralls": "nyc npm test && nyc report --reporter=lcov --reporter=text --reporter=lcovonly || coveralls",
     "start": "nodemon index.js --exec babel-node --presets babel-preset-es2015"
   },
+
+  "nyc": {
+    "exclude": [
+      "**/controllers/**",
+      "**/model/**",
+      "client"
+    ],
+    },
+    "reporter": [
+      "lcov",
+      "text"
+    ],
   "keywords": [
     "es6",
     "testing"
