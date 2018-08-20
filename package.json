@@ -9,7 +9,7 @@
   "scripts": {
     "build": "babel src -d dist",
     "test": "mocha tests/testIndex.js --compilers js:babel-register --exit || true",
-    "start":"node dist/index.js"
+    "start": "node dist/index.js"
   },
   "keywords": [
     "es6",
@@ -30,5 +30,10 @@
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
     "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "joi": "^13.6.0"
   }
 }
