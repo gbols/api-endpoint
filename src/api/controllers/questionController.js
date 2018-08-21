@@ -61,6 +61,7 @@ const postAnswer = (req, res) => {
   const { error, value } = validatePostAnAnswer(req.body);
   if (error) return res.status(404).send(error.message);
   const ans = {
+    id : db.answers.length + 1,
     vote: 0,
     response: value.response,
     accepted: false
