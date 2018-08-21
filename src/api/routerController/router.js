@@ -1,7 +1,8 @@
 import express from "express";
 import {
   getAllQuestions,
-  getSingleQuestion
+  getSingleQuestion,
+  postQuestion
 } from "../controllers/questionController";
 
 const router = express.Router();
@@ -9,5 +10,7 @@ const router = express.Router();
 router.get("/questions", getAllQuestions);
 
 router.get("/questions/:id", getSingleQuestion);
+
+router.post("/questions", postQuestion);
 
 export default router;

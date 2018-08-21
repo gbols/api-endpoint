@@ -3,13 +3,26 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getSingleQuestion = exports.getAllQuestions = undefined;
+exports.postQuestion = exports.getSingleQuestion = exports.getAllQuestions = undefined;
+
+var _joi = require("joi");
+
+var _joi2 = _interopRequireDefault(_joi);
 
 var _model = require("../../model");
 
 var _model2 = _interopRequireDefault(_model);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var validatePostAQuestion = function validatePostAQuestion(postQue) {
+  var postShema = {
+    question: _joi2.default.string().min(15).required()
+  };
+  var result = _joi2.default.validate(postQue, postShema);
+
+  return result;
+};
 
 var getAllQuestions = function getAllQuestions(req, res) {
   res.send(_model2.default);
@@ -25,6 +38,20 @@ var getSingleQuestion = function getSingleQuestion(req, res) {
   res.send(selectedQuestion);
 };
 
+var postQuestion = function postQuestion(req, res) {
+  var _validatePostAQuestio = validatePostAQuestion(req.body),
+      error = _validatePostAQuestio.error,
+      value = _validatePostAQuestio.value;
+
+  if (error) return res.status(404).send(error.message);
+  var question = {
+    question: value.question,
+    answers: []
+  };
+  _model2.default.push(question);
+  res.json(question);
+};
+
 function findId(questionId) {
   return _model2.default.find(function (question) {
     return question.id === questionId;
@@ -33,3 +60,4 @@ function findId(questionId) {
 
 exports.getAllQuestions = getAllQuestions;
 exports.getSingleQuestion = getSingleQuestion;
+exports.postQuestion = postQuestion;

@@ -20,16 +20,18 @@ describe("/Home Directory", () => {
       });
   });
 
-  it("it send an ok status and be an array with 3 items", done => {
-    chai
-      .request(app)
-      .get("/api/v1/question/2")
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.be.a("object");
-        done();
-      });
-  });
+  // it("it send an ok status and be an object", done => {
+  //   chai
+  //     .request(app)
+  //     .get("/api/v1/question/2")
+  //     .set("Content-Type", "application/json")
+  //     .set("Accept", "application/json")
+  //     .end((err, res) => {
+  //       res.should.have.status(200);
+  //       res.body.should.be.a("object");
+  //       done();
+  //     });
+  // });
 
   it("it should be an error", done => {
     chai
@@ -41,3 +43,24 @@ describe("/Home Directory", () => {
       });
   });
 });
+
+// describe("/POST request", () => {
+//   it("should post a question in the database", done => {
+//     const que = {
+//       question: "The Lord of the Rings",
+//       answers: []
+//     };
+
+//     chai
+//       .request(app)
+//       .post("/api/v1/questions")
+//       .send(que)
+//       .end((err, res) => {
+//         res.should.have.status(200);
+//         res.body.should.be.a("object");
+//         res.body.should.have.property("errors");
+//         res.body.errors.should.have.property("question");
+//         done();
+//       });
+//   });
+// });
