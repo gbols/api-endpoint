@@ -52,10 +52,12 @@ const postQuestion = (req, res) => {
 
 const postAnswer = (req, res) => {
   const questionId = parseInt(req.params.id);
-  const  result= findId(questionId);
+  const result = findId(questionId);
   if (!result)
-   return res.status(404).send("The Qestion with the given Id was not found in the database");
-   
+    return res
+      .status(404)
+      .send("The Qestion with the given Id was not found in the database");
+
   const { error, value } = validatePostAnAnswer(req.body);
   if (error) return res.status(404).send(error.message);
   const ans = {
@@ -67,8 +69,16 @@ const postAnswer = (req, res) => {
   res.send(ans);
 };
 
+const deleteQuestion = (req, res) => {
+  const questionId = parseInt(req.params.id);
+  const result = findId(questionId);
+  console.log(db.indexOf(result));
+  db.splice(db.indexOf(result), 1);
+  res.send(result);
+};
+
 function findId(questionId) {
   return db.find(question => question.id === questionId);
 }
 
-export { getAllQuestions, getSingleQuestion, postQuestion, postAnswer };
+export { getAllQuestions, getSingleQuestion, postQuestion, postAnswer, deleteQuestion};
