@@ -23,7 +23,7 @@ describe("/Home Directory", () => {
   it("it send an ok status and be an array with 3 items", done => {
     chai
       .request(app)
-      .get("/api/v1/question/2")
+      .get("/api/v1/questions/2")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
