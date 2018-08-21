@@ -22,4 +22,6 @@ router.post("/questions", _questionController.postQuestion);
 
 router.post("/questions/:id/answers", _questionController.postAnswer);
 
+router.delete("/questions/:id", _questionController.deleteQuestion);
+
 exports.default = router;

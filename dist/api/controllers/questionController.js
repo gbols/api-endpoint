@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.postAnswer = exports.postQuestion = exports.getSingleQuestion = exports.getAllQuestions = undefined;
+exports.deleteQuestion = exports.postAnswer = exports.postQuestion = exports.getSingleQuestion = exports.getAllQuestions = undefined;
 
 var _joi = require("joi");
 
@@ -81,6 +81,14 @@ var postAnswer = function postAnswer(req, res) {
   res.send(ans);
 };
 
+var deleteQuestion = function deleteQuestion(req, res) {
+  var questionId = parseInt(req.params.id);
+  var result = findId(questionId);
+  console.log(_model2.default.indexOf(result));
+  _model2.default.splice(_model2.default.indexOf(result), 1);
+  res.send(result);
+};
+
 function findId(questionId) {
   return _model2.default.find(function (question) {
     return question.id === questionId;
@@ -91,3 +99,4 @@ exports.getAllQuestions = getAllQuestions;
 exports.getSingleQuestion = getSingleQuestion;
 exports.postQuestion = postQuestion;
 exports.postAnswer = postAnswer;
+exports.deleteQuestion = deleteQuestion;
