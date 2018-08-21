@@ -18,4 +18,6 @@ router.get("/questions", _questionController.getAllQuestions);
 
 router.get("/questions/:id", _questionController.getSingleQuestion);
 
+router.post("/questions", _questionController.postQuestion);
+
 exports.default = router;
