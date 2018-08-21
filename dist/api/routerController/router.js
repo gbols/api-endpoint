@@ -20,4 +20,6 @@ router.get("/questions/:id", _questionController.getSingleQuestion);
 
 router.post("/questions", _questionController.postQuestion);
 
+router.post("/questions/:id/answers", _questionController.postAnswer);
+
 exports.default = router;
