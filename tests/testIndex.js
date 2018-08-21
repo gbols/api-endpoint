@@ -19,4 +19,25 @@ describe("/Home Directory", () => {
         done();
       });
   });
+
+  it("it send an ok status and be an array with 3 items", done => {
+    chai
+      .request(app)
+      .get("/api/v1/question/2")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+
+  it("it should be an error", done => {
+    chai
+      .request(app)
+      .get("/api/v1/questions/4")
+      .end((err, res) => {
+        res.should.have.status(404);
+        done();
+      });
+  });
 });
