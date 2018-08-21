@@ -73,6 +73,7 @@ var postAnswer = function postAnswer(req, res) {
 
   if (error) return res.status(404).send(error.message);
   var ans = {
+    id: _model2.default.answers.length + 1,
     vote: 0,
     response: value.response,
     accepted: false
