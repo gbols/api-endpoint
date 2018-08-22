@@ -24,4 +24,8 @@ const signUp = (req, res) => {
   });
 };
 
-export default signUp;
+const signOut = (req,res) => {
+  res.send('you have successfully signed out');
+}
+
+export { signUp, signOut };
