@@ -17,5 +17,6 @@ var router = _express2.default.Router();
 router.post("/signup", _questionController.signUp);
 router.get("/sigout", _questionController.signOut);
 router.get("/questions", _questionController.getAllQuestions);
+router.get("/questions/:id", _questionController.getSingleQuestion);
 
 exports.default = router;

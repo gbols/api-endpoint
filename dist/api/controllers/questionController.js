@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getAllQuestions = exports.signOut = exports.signUp = undefined;
+exports.getSingleQuestion = exports.getAllQuestions = exports.signOut = exports.signUp = undefined;
 
 var _pg = require("pg");
 
@@ -12,6 +12,8 @@ var _model = require("../../model");
 var _model2 = _interopRequireDefault(_model);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var pool = new _pg.Pool({
   user: "xpqpkfkytwtawv",
@@ -50,6 +52,24 @@ var getAllQuestions = function getAllQuestions(req, res) {
   });
 };
 
+var getSingleQuestion = function getSingleQuestion(req, res) {
+  pool.connect(function (err, client, done) {
+    if (err) return res.send("error was found when running the request " + err);
+    client.query("SELECT * FROM questions WHERE question_id = $1", [Number(req.params.id)], function (err, result) {
+      if (err) return res.send("error was found when running query " + err);
+      if (result.rows.length === 0) return res.send("error was found when running query " + err);
+
+      client.query("SELECT * FROM answers WHERE question_id = $1", [Number(req.params.id)], function (error, ansResult) {
+        if (error) return res.send("error was found when running query " + err);
+        if (ansResult.rows.length === 0) return res.send("error was found when running query " + err);
+        res.send(['Question:'].concat(_toConsumableArray(result.rows), ['Answers:'], _toConsumableArray(ansResult.rows)));
+      });
+    });
+    done();
+  });
+};
+
 exports.signUp = signUp;
 exports.signOut = signOut;
 exports.getAllQuestions = getAllQuestions;
+exports.getSingleQuestion = getSingleQuestion;
