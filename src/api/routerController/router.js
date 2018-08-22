@@ -1,22 +1,10 @@
 import express from "express";
 import {
-  getAllQuestions,
-  getSingleQuestion,
-  postQuestion,
-  postAnswer,
-  deleteQuestion
+signUp
 } from "../controllers/questionController";
 
 const router = express.Router();
 
-router.get("/questions", getAllQuestions);
-
-router.get("/questions/:id", getSingleQuestion);
-
-router.post("/questions", postQuestion);
-
-router.post("/questions/:id/answers", postAnswer);
-
-router.delete("/questions/:id", deleteQuestion);
+router.post("/signup", signUp);
 
 export default router;

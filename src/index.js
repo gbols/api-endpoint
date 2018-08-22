@@ -8,6 +8,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/api/v1", Router);
+app.use("/api/v1/auth", Router);
 
 const port = process.env.PORT || 3000;
 app.listen(port);

@@ -24,6 +24,7 @@ app.use(_express2.default.json());
 app.use(_bodyParser2.default.json());
 app.use(_bodyParser2.default.urlencoded({ extended: false }));
 app.use("/api/v1", _router2.default);
+app.use("/api/v1/auth", _router2.default);
 
 var port = process.env.PORT || 3000;
 app.listen(port);

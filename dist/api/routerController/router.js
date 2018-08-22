@@ -14,14 +14,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var router = _express2.default.Router();
 
-router.get("/questions", _questionController.getAllQuestions);
-
-router.get("/questions/:id", _questionController.getSingleQuestion);
-
-router.post("/questions", _questionController.postQuestion);
-
-router.post("/questions/:id/answers", _questionController.postAnswer);
-
-router.delete("/questions/:id", _questionController.deleteQuestion);
+router.post("/signup", _questionController.signUp);
 
 exports.default = router;
