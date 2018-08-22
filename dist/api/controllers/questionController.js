@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getAllQuestions = exports.signOut = exports.signUp = undefined;
 
 var _pg = require("pg");
 
@@ -32,4 +33,23 @@ var signUp = function signUp(req, res) {
   });
 };
 
-exports.default = signUp;
+var signOut = function signOut(req, res) {
+  res.send("you have successfully signed out");
+};
+
+var getAllQuestions = function getAllQuestions(req, res) {
+  pool.connect(function (err, client, done) {
+    if (err) {
+      return res.send("error fetching client from pool", err);
+    }
+    client.query("SELECT * FROM questions", function (err, result) {
+      if (err) return res.send("error was found when running query " + err);
+      res.send(result.rows);
+    });
+    done();
+  });
+};
+
+exports.signUp = signUp;
+exports.signOut = signOut;
+exports.getAllQuestions = getAllQuestions;
