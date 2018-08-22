@@ -24,8 +24,23 @@ const signUp = (req, res) => {
   });
 };
 
-const signOut = (req,res) => {
-  res.send('you have successfully signed out');
-}
+const signOut = (req, res) => {
+  res.send("you have successfully signed out");
+};
 
-export { signUp, signOut };
+const getAllQuestions = (req, res) => {
+  pool.connect((err, client, done) => {
+    if (err) {
+      return res.send("error fetching client from pool", err);
+    }
+    client.query(
+      "SELECT * FROM questions",(err,result) => {
+        if (err) return res.send(`error was found when running query ${err}`);
+        res.send(result.rows);
+      }
+    );
+    done();
+  });
+};
+
+export { signUp, signOut, getAllQuestions };
