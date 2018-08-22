@@ -51,22 +51,40 @@ const getSingleQuestion = (req, res) => {
         if (err) return res.send(`error was found when running query ${err}`);
         if (result.rows.length === 0)
           return res.send(`error was found when running query ${err}`);
-        
-          client.query(
-            "SELECT * FROM answers WHERE question_id = $1",
-            [Number(req.params.id)],
-            (error, ansResult) => {
-              if (error)
-                return res.send(`error was found when running query ${err}`);
-              if (ansResult.rows.length === 0)
-                return res.send(`error was found when running query ${err}`);
-                res.send(['Question:', ...result.rows, 'Answers:', ...ansResult.rows]);
-            }
-          );
+
+        client.query(
+          "SELECT * FROM answers WHERE question_id = $1",
+          [Number(req.params.id)],
+          (error, ansResult) => {
+            if (error)
+              return res.send(`error was found when running query ${err}`);
+            if (ansResult.rows.length === 0)
+              return res.send(`error was found when running query ${err}`);
+            res.send([
+              "Question:",
+              ...result.rows,
+              "Answers:",
+              ...ansResult.rows
+            ]);
+          }
+        );
       }
     );
     done();
   });
 };
 
-export { signUp, signOut, getAllQuestions, getSingleQuestion };
+const postQuestion = (req, res) => {
+  pool.connect((err, client, done) => {
+    if (err) return res.send(`error was found when running the request ${err}`);
+    client.query('INSERT INTO questions (question,user_id,username) VALUES($1, $2, $3)',[
+      req.body.question,
+      req.body.user_id,
+      req.body.username
+    ]);
+    done();
+    res.send('question was succesfully added');
+  });
+};
+
+export { signUp, signOut, getAllQuestions, getSingleQuestion, postQuestion};

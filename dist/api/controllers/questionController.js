@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getSingleQuestion = exports.getAllQuestions = exports.signOut = exports.signUp = undefined;
+exports.postQuestion = exports.getSingleQuestion = exports.getAllQuestions = exports.signOut = exports.signUp = undefined;
 
 var _pg = require("pg");
 
@@ -62,10 +62,19 @@ var getSingleQuestion = function getSingleQuestion(req, res) {
       client.query("SELECT * FROM answers WHERE question_id = $1", [Number(req.params.id)], function (error, ansResult) {
         if (error) return res.send("error was found when running query " + err);
         if (ansResult.rows.length === 0) return res.send("error was found when running query " + err);
-        res.send(['Question:'].concat(_toConsumableArray(result.rows), ['Answers:'], _toConsumableArray(ansResult.rows)));
+        res.send(["Question:"].concat(_toConsumableArray(result.rows), ["Answers:"], _toConsumableArray(ansResult.rows)));
       });
     });
     done();
+  });
+};
+
+var postQuestion = function postQuestion(req, res) {
+  pool.connect(function (err, client, done) {
+    if (err) return res.send("error was found when running the request " + err);
+    client.query('INSERT INTO questions (question,user_id,username) VALUES($1, $2, $3)', [req.body.question, req.body.user_id, req.body.username]);
+    done();
+    res.send('question was succesfully added');
   });
 };
 
@@ -73,3 +82,4 @@ exports.signUp = signUp;
 exports.signOut = signOut;
 exports.getAllQuestions = getAllQuestions;
 exports.getSingleQuestion = getSingleQuestion;
+exports.postQuestion = postQuestion;
