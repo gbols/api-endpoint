@@ -1,5 +1,4 @@
-# api-endpoints
-describes several endpoints that an api has
-users can request for the following endpionts
-1. "/"
-2. "api/v1/questions"
+# stack over flow lite
+A lite version of the popular stackOverflow App
+
+A place users can ask questions and have other users give answers.
