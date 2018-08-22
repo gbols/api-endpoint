@@ -19,21 +19,25 @@ describe("/Home Directory", () => {
         done();
       });
   });
+});
 
-  // it("it send an ok status and be an object", done => {
-  //   chai
-  //     .request(app)
-  //     .get("/api/v1/question/2")
-  //     .set("Content-Type", "application/json")
-  //     .set("Accept", "application/json")
-  //     .end((err, res) => {
-  //       res.should.have.status(200);
-  //       res.body.should.be.a("object");
-  //       done();
-  //     });
-  // });
+ describe('/Testing the GET with a valid id',()=>{
+    it("it send an ok status and be an array with an item", done => {
+    chai
+      .request(app)
+      .get("/api/v1/question/2")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        res.body.length.should.be.eql(1);
+        done();
+      });
+  });
+ });
 
-  it("it should be an error", done => {
+
+  describe('/Test with Invalid id',() =>{
+    it("it should be an error", done => {
     chai
       .request(app)
       .get("/api/v1/questions/4")

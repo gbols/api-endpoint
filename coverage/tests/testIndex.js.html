@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">81.82% </span>
+        <span class="strong">87.5% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>9/11</span>
+        <span class='fraction'>21/24</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -32,12 +32,12 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>3/3</span>
+        <span class='fraction'>9/9</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">81.82% </span>
+        <span class="strong">87.5% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>9/11</span>
+        <span class='fraction'>21/24</span>
       </div>
     </div>
     <p class="quiet">
@@ -112,7 +112,11 @@
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
 <a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -122,38 +126,42 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -188,40 +196,44 @@ const should = chai.should();
 chai.use(chaiHttp);
 &nbsp;
 describe("/Home Directory", () =&gt; {
-  // it("it send an ok status and be an array with 3 items", done =&gt; {
-  //   chai
-  //     .request(app)
-  //     .get("/api/v1/questions")
-  //     .end((err, res) =&gt; {
-  //       res.should.have.status(200);
-  //       res.body.should.be.a("array");
-  //       res.body.length.should.be.eql(3);
-  //       done();
-  //     });
-  // });
+  it("it send an ok status and be an array with 3 items", done =&gt; {
+    chai
+      .request(app)
+      .get("/api/v1/questions")
+      .end((err, res) =&gt; {
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        res.body.length.should.be.eql(3);
+        done();
+      });
+  });
+});
 &nbsp;
-  it("it send an ok status and be an object", done =&gt; {
+ describe('/Testing the GET with a valid id',()=&gt;{
+    it("it send an ok status and be an array with an item", done =&gt; {
     chai
       .request(app)
       .get("/api/v1/question/2")
-      .set("Content-Type", "application/json")
-      .set("Accept", "application/json")
       .end((err, res) =&gt; {
         res.should.have.status(200);
-<span class="cstat-no" title="statement not covered" >        res.body.should.be.a("object");</span>
+<span class="cstat-no" title="statement not covered" >        res.body.should.be.a("array");</span>
+<span class="cstat-no" title="statement not covered" >        res.body.length.should.be.eql(1);</span>
 <span class="cstat-no" title="statement not covered" >        done();</span>
       });
   });
+ });
 &nbsp;
-  // it("it should be an error", done =&gt; {
-  //   chai
-  //     .request(app)
-  //     .get("/api/v1/questions/4")
-  //     .end((err, res) =&gt; {
-  //       res.should.have.status(404);
-  //       done();
-  //     });
-  // });
+&nbsp;
+  describe('/Test with Invalid id',() =&gt;{
+    it("it should be an error", done =&gt; {
+    chai
+      .request(app)
+      .get("/api/v1/questions/4")
+      .end((err, res) =&gt; {
+        res.should.have.status(404);
+        done();
+      });
+  });
 });
 &nbsp;
 // describe("/POST request", () =&gt; {
@@ -250,7 +262,7 @@ describe("/Home Directory", () =&gt; {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Aug 21 2018 08:38:33 GMT+0100 (WAT)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Aug 22 2018 05:34:56 GMT+0100 (WAT)
 </div>
 </div>
 <script src="../prettify.js"></script>
