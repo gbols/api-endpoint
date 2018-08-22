@@ -10,18 +10,12 @@ var _express2 = _interopRequireDefault(_express);
 
 var _questionController = require("../controllers/questionController");
 
+var _questionController2 = _interopRequireDefault(_questionController);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var router = _express2.default.Router();
 
-router.get("/questions", _questionController.getAllQuestions);
-
-router.get("/questions/:id", _questionController.getSingleQuestion);
-
-router.post("/questions", _questionController.postQuestion);
-
-router.post("/questions/:id/answers", _questionController.postAnswer);
-
-router.delete("/questions/:id", _questionController.deleteQuestion);
+router.post("/signup", _questionController2.default);
 
 exports.default = router;
