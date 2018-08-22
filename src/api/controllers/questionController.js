@@ -1,7 +1,7 @@
 import db from "../../model";
 
 const getAllQuestions = (req, res) => {
-res.send(db);
+res.json(db);
 }
 
 const getSingleQuestion = (req, res) => {
@@ -10,7 +10,7 @@ const getSingleQuestion = (req, res) => {
   if(!result) 
     return res.status(404).send("The Qestion with the given Id was not found in the database");
   const selectedQuestion = db.filter(question => question.id === questionId);
-  res.send(selectedQuestion);
+  res.json(selectedQuestion);
 
 }
 

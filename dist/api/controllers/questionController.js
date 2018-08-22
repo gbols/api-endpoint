@@ -12,7 +12,7 @@ var _model2 = _interopRequireDefault(_model);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var getAllQuestions = function getAllQuestions(req, res) {
-  res.send(_model2.default);
+  res.json(_model2.default);
 };
 
 var getSingleQuestion = function getSingleQuestion(req, res) {
@@ -22,7 +22,7 @@ var getSingleQuestion = function getSingleQuestion(req, res) {
   var selectedQuestion = _model2.default.filter(function (question) {
     return question.id === questionId;
   });
-  res.send(selectedQuestion);
+  res.json(selectedQuestion);
 };
 
 function findId(questionId) {
