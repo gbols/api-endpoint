@@ -19,5 +19,6 @@ router.get("/sigout", _questionController.signOut);
 router.get("/questions", _questionController.getAllQuestions);
 router.get("/questions/:id", _questionController.getSingleQuestion);
 router.post("/questions", _questionController.postQuestion);
+router.delete("/questions/:id", _questionController.deleteQuestion);
 
 exports.default = router;
