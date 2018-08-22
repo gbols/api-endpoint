@@ -21,11 +21,11 @@ describe("/Home Directory", () => {
   });
 });
 
- describe('/Testing the GET with a valid id',()=>{
-    it("it send an ok status and be an array with an item", done => {
+describe("test for a specific route", () => {
+  it("it send an ok status an object", done => {
     chai
       .request(app)
-      .get("/api/v1/question/2")
+      .get("/api/v1/questions/2")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("array");
@@ -33,11 +33,10 @@ describe("/Home Directory", () => {
         done();
       });
   });
- });
+});
 
-
-  describe('/Test with Invalid id',() =>{
-    it("it should be an error", done => {
+describe("/Test with Invalid id", () => {
+  it("it should be an error", done => {
     chai
       .request(app)
       .get("/api/v1/questions/4")
@@ -48,23 +47,43 @@ describe("/Home Directory", () => {
   });
 });
 
-// describe("/POST request", () => {
-//   it("should post a question in the database", done => {
-//     const que = {
-//       question: "The Lord of the Rings",
-//       answers: []
-//     };
+describe("/POST request", () => {
+  it("should not post without the question field ", done => {
+    const que = {
+      answers: []
+    };
 
-//     chai
-//       .request(app)
-//       .post("/api/v1/questions")
-//       .send(que)
-//       .end((err, res) => {
-//         res.should.have.status(200);
-//         res.body.should.be.a("object");
-//         res.body.should.have.property("errors");
-//         res.body.errors.should.have.property("question");
-//         done();
-//       });
-//   });
-// });
+    chai
+      .request(app)
+      .post("/api/v1/questions")
+      .send(que)
+      .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+});
+
+describe("/POST request", () => {
+  it("should post a question when all fields are met ", done => {
+    const que = {
+      id: 5,
+      question: "who is black panther?",
+      answers: []
+    };
+
+    chai
+      .request(app)
+      .post("/api/v1/questions")
+      .send(que)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        res.body.book.should.have.property("id");
+        res.body.book.should.have.property("question");
+        res.body.book.should.have.property("answers");
+        done();
+      });
+  });
+});
