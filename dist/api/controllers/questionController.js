@@ -41,7 +41,10 @@ var getSingleQuestion = function getSingleQuestion(req, res) {
       client.query("SELECT * FROM answers WHERE question_id = $1", [Number(req.params.id)], function (error, ansResult) {
         if (error) return res.send("error was found when running query " + err);
         if (ansResult.rows.length === 0) return res.send("error was found when running query " + err);
-        res.send(["Question:"].concat(_toConsumableArray(result.rows), ["Answers:"], _toConsumableArray(ansResult.rows)));
+        var trio = [].concat(_toConsumableArray(result.rows));
+        var answers = [].concat(_toConsumableArray(ansResult.rows));
+        trio[0].answers = answers;
+        res.send(trio);
       });
     });
     done();

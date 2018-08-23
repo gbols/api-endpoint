@@ -9,7 +9,6 @@ const pool = new Pool({
   ssl: true
 });
 
-
 const getAllQuestions = (req, res) => {
   pool.connect((err, client, done) => {
     if (err) {
@@ -42,12 +41,10 @@ const getSingleQuestion = (req, res) => {
               return res.send(`error was found when running query ${err}`);
             if (ansResult.rows.length === 0)
               return res.send(`error was found when running query ${err}`);
-            res.send([
-              "Question:",
-              ...result.rows,
-              "Answers:",
-              ...ansResult.rows
-            ]);
+            const trio = [...result.rows];
+            const answers = [...ansResult.rows];
+            trio[0].answers = answers;
+            res.send(trio);
           }
         );
       }
@@ -147,13 +144,15 @@ const acceptAnswer = (req, res) => {
       [Number(req.params.qId)],
       (error, result) => {
         if (error)
-          return res.status(500).send(`Error connecting to the database! ... ${error}`);
+          return res
+            .status(500)
+            .send(`Error connecting to the database! ... ${error}`);
         if (result.rows.length === 0)
           return res
             .status(404)
             .send(`The given question wasn't found in the database!`);
-          
-               client.query(
+
+        client.query(
           "SELECT accepted FROM  answers WHERE answer_id = $answerId",
           [Number(req.params.aId)],
           (ansErr, ansResult) => {
@@ -187,7 +186,6 @@ const acceptAnswer = (req, res) => {
             );
           }
         );
-            
       }
     );
     done();
