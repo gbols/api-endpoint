@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import Joi from "joi";
 
 const pool = new Pool({
   user: "xpqpkfkytwtawv",
@@ -24,23 +25,23 @@ const getAllQuestions = (req, res) => {
 
 const getSingleQuestion = (req, res) => {
   pool.connect((err, client, done) => {
-    if (err) return res.send(`error was found when running the request ${err}`);
+    if (err) return res.status(500).send(`error was found when connecting to the server ${err.message}`);
     client.query(
       "SELECT * FROM questions WHERE question_id = $1",
       [Number(req.params.id)],
       (err, result) => {
-        if (err) return res.send(`error was found when running query ${err}`);
+        if (err) return res.send(`error was found when running query on the database ${err.message}`);
         if (result.rows.length === 0)
-          return res.send(`error was found when running query ${err}`);
+          return res.send(`The given question does not exit in the database`);
 
         client.query(
           "SELECT * FROM answers WHERE question_id = $1",
           [Number(req.params.id)],
           (error, ansResult) => {
             if (error)
-              return res.send(`error was found when running query ${err}`);
+              return res.status(500).send(`error was found when connecting to the server ${err}`);
             if (ansResult.rows.length === 0)
-              return res.send(`error was found when running query ${err}`);
+              return res.send(`The given answer was not found in the database`);
             const trio = [...result.rows];
             const answers = [...ansResult.rows];
             trio[0].answers = answers;
@@ -53,9 +54,18 @@ const getSingleQuestion = (req, res) => {
   });
 };
 
+const validatePostQuestion = question => {
+  const queSchema = {
+    question: Joi.string().required()
+  };
+  return Joi.validate(question, queSchema);
+};
+
 const postQuestion = (req, res) => {
   pool.connect((err, client, done) => {
-    if (err) return res.send(`error was found when running the request ${err}`);
+    if (err) return res.status(500).send(`error was found connecting to the server ${err.message}`);
+    const { error, result } = validatePostQuestion();
+    if (error) return res.status(404).send(`${error.message}`);
     client.query(
       "INSERT INTO questions (question,user_id,username) VALUES($1, $2, $3)",
       [req.body.question, req.body.user_id, req.body.username]
@@ -67,13 +77,13 @@ const postQuestion = (req, res) => {
 
 const deleteQuestion = (req, res) => {
   pool.connect((err, client, done) => {
-    if (err) return res.send(`error was found when running the request ${err}`);
+    if (err) return res.status(500).send(`error was found connecting to the server ${err.message}`);
     client.query(
       "SELECT question FROM questions WHERE question_id = $1 AND user_id = $2",
       [Number(req.params.id), req.body.user_id],
       (err, result) => {
         if (err)
-          return res.send(`error was found when running the request ${err}`);
+          return res.status(500).send(`error was found when connecting to the database ${err.message}`);
         if (result.rows.length === 0) {
           return res.send(
             `You can't delete this question because its not in the dtabase!`
@@ -85,7 +95,7 @@ const deleteQuestion = (req, res) => {
           (error, delResult) => {
             if (error)
               return res.send(
-                `error was found when running the request ${err}`
+                `error was found connecting to the database ${err.message}`
               );
 
             res.send(
@@ -99,15 +109,24 @@ const deleteQuestion = (req, res) => {
   });
 };
 
+const validatePostAnswer = ans => {
+  const ansSchema = {
+    answer: Joi.string().required()
+  };
+  return Joi.validate(ans, ansSchema);
+};
+
 const postAnswer = (req, res) => {
   pool.connect((err, client, done) => {
-    if (err) return res.send(`error was found when running the request ${err}`);
+    if (err) return res.status(500).send(`error was found when connecting to the server ${err.message}`);
+    const {error:errReport} = validatePostAnswer(req.body.response);
+    if (errReport) return res.status(404).send(errReport.message);
     client.query(
       "SELECT question FROM questions WHERE question_id = $1",
       [Number(req.params.id)],
       (queErr, result) => {
         if (queErr)
-          return res.send(`error was found when running the request ${err}`);
+          return res.send(`error was found connecting to the server ${err.message}`);
         if (result.rows.length === 0)
           return res.send(
             `The question with the ID can't be found in the database!...`
@@ -125,7 +144,7 @@ const postAnswer = (req, res) => {
           (error, queResult) => {
             if (error)
               return res.send(
-                `error was found when running the request ${err}`
+                `error was found connecting to the database ${err.message}`
               );
           }
         );
@@ -138,7 +157,7 @@ const postAnswer = (req, res) => {
 
 const acceptAnswer = (req, res) => {
   pool.connect((err, client, done) => {
-    if (err) return res.send(`error was found when running the request ${err}`);
+    if (err) return res.status(500).send(`error was found when running the request ${err.message}`);
     client.query(
       "SELECT question FROM questions WHERE question_id = $questionId",
       [Number(req.params.qId)],
@@ -158,7 +177,7 @@ const acceptAnswer = (req, res) => {
           (ansErr, ansResult) => {
             if (ansErr)
               return res.send(
-                `error was found when running the request ${ansErr}`
+                `error was found when connecting to the database ${ansErr.message}`
               );
             if (ansResult.rows.length === 0)
               return res
@@ -171,7 +190,7 @@ const acceptAnswer = (req, res) => {
               (errUpdate, updateResult) => {
                 if (errUpdate)
                   return res.send(
-                    `error was found when running the request ${errUpdate}`
+                    `error was found when connecting to the database ${errUpdate.message}`
                   );
                 if (updateResult.rows.length === 0)
                   res
