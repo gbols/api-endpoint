@@ -12,7 +12,7 @@ var _bodyParser = require("body-parser");
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _router = require("./api/routerController/router");
+var _router = require("./api/routes/router");
 
 var _router2 = _interopRequireDefault(_router);
 
