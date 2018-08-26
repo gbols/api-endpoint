@@ -1,13 +1,11 @@
 import { Pool } from "pg";
 import Jwt from "jsonwebtoken";
 
+const connectionString =
+  "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
+
 const pool = new Pool({
-  user: "xpqpkfkytwtawv",
-  host: "ec2-54-163-246-5.compute-1.amazonaws.com",
-  database: "d85f5m5n2i0fo1",
-  password: "aea9af9e850047d541527c27730364949631366f72ca4630763718066a13f498",
-  port: 5432,
-  ssl: true
+  connectionString: connectionString
 });
 
 function validateEmail(email) {
@@ -16,8 +14,9 @@ function validateEmail(email) {
 }
 
 const signUp = (req, res) => {
-  let user;
-  if (
+  if (!req.body.username || !req.body.password || !req.body.email) {
+    return res.status(403).send("missing fields are required");
+  } if (
     !req.body.username.trim() ||
     !req.body.password.trim() ||
     !req.body.email.trim()
@@ -32,12 +31,11 @@ const signUp = (req, res) => {
       return res.send("error fetching client from pool", err);
     }
     client.query(
-      "SELECT FROM users  WHERE username = $1",
+      "SELECT * FROM users  WHERE username = $1",
       [req.body.username],
       (userErr, userResult) => {
-        if (userErr)
-          return res.sendStatus(500);
-            // .send(`Error connecting to database ${userErr.message}`);
+        if (userErr) return res.sendStatus(500);
+        // .send(`Error connecting to database ${userErr.message}`);
         if (userResult.rows.length !== 0)
           return res.send(
             `User with credentials already exits in the database`
@@ -47,7 +45,7 @@ const signUp = (req, res) => {
           [req.body.username, req.body.email, req.body.password]
         );
         client.query(
-          "SELECT user FROM users WHERE username = $1 AND email = $2 AND password = $3",
+          "SELECT * FROM users WHERE username = $1 AND email = $2 AND password = $3",
           [req.body.username, req.body.email, req.body.password],
           (userDetailsErr, userDetailsResult) => {
             if (userDetailsErr) {
@@ -57,14 +55,55 @@ const signUp = (req, res) => {
                 }`
               );
             } else {
-              user = userDetailsResult.rows[0];
+              const user = userDetailsResult.rows[0];
               // res.json({message: `user succesfully created!.....`});
               Jwt.sign({ user }, "luapnahalobgujnugalo", (err, token) => {
-                res.json({ token, message:`User succefully created!....` });
+                res.json({ token, user, message: `User succefully created!....` });
               });
             }
           }
         );
+      }
+    );
+    done();
+  });
+};
+
+const logIn = (req, res) => {
+  if (!req.body.username || !req.body.password) {
+    return res.status(403).send("missing fields are required");
+  }  
+  if (!req.body.username.trim() || !req.body.password.trim()) {
+    return res.status(403).send("all input fields are required");
+  }
+  pool.connect((err, client, done) => {
+    if (err)
+      return res
+        .status(500)
+        .send(`error connecting to the sever ${err.message}`);
+    client.query(
+      "SELECT * FROM users WHERE username = $1 AND password = $2",
+      [req.body.username, req.body.password],
+      (loginErr, loginResult) => {
+        if (loginErr)
+          return res
+            .status(500)
+            .send(
+              `There was an error connecting to the database ${
+                loginErr.message
+              }`
+            );
+        else if (loginResult.rows.length === 0)
+          { res
+            .status(403)
+            .send(`user does not have an account you need to sign up!....`);}
+            else{
+              const user = loginResult.rows[0];
+              Jwt.sign({ user }, "luapnahalobgujnugalo", (err, token) => {
+                if(err) return res.status(500).send("Error generating your token");
+                res.json({ token, user, message: `User succefully logged In!....` });
+              });
+            }
       }
     );
     done();
@@ -84,4 +123,4 @@ const signOut = (req, res) => {
   res.send("you have successfully signed out");
 };
 
-export { signOut, signUp, verifyToken };
+export { signOut, signUp, logIn, verifyToken };

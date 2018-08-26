@@ -1,17 +1,5 @@
 import { Pool } from "pg";
 import Jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-
-// dotenv.config();
-
-// const pool = new Pool({
-//   user: process.env.USER,
-//   host: process.env.HOST,
-//   database: process.env.DATABASE,
-//   password: process.env.PASSWORD,
-//   port: process.env.PORT,
-//   ssl: process.env.SSL
-// });
 
 const connectionstring =
   "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
@@ -34,7 +22,7 @@ const getAllQuestions = (req, res) => {
           res.status(500);
         }
       } else {
-        res.send({ message: result.rows });
+        res.send(result.rows);
       }
     });
     done();
@@ -66,12 +54,17 @@ const getSingleQuestion = (req, res) => {
               return res
                 .status(500)
                 .send(`error was found when connecting to the server ${err}`);
-            if (ansResult.rows.length === 0)
-              return res.send(`The given answer was not found in the database`);
-            const trio = [...result.rows];
-            const answers = [...ansResult.rows];
-            trio[0].answers = answers;
-            res.send(trio);
+            if (ansResult.rows.length === 0) {
+              const trio = [...result.rows];
+              const answers = [];
+              trio[0].answers = answers;
+              res.send(trio);
+            } else {
+              const trio = [...result.rows];
+              const answers = [...ansResult.rows];
+              trio[0].answers = answers;
+              res.send(trio);
+            }
           }
         );
       }
@@ -93,10 +86,15 @@ const postQuestion = (req, res) => {
           .send(`error was found connecting to the server ${err.message}`);
       client.query(
         "INSERT INTO questions (question,userid,username) VALUES($1, $2, $3)",
-        [req.body.question, authData.userid, authData.username],
+        [req.body.question, authData.user.userid, authData.user.username],
         (postErr, postResult) => {
           if (postErr) {
-            res.status(403).send(`error was found runnning the query....!`);
+            console.log(authData);
+            res
+              .status(403)
+              .send(
+                `error was found runnning the query....! ${postErr.message}`
+              );
           } else {
             res.json({ message: "Question was successfully posted! ....." });
           }
@@ -119,21 +117,38 @@ const deleteQuestion = (req, res) => {
           .status(500)
           .send(`error was found connecting to the server ${err.message}`);
       client.query(
-        "DELETE FROM questions WHERE questionid = $1 AND userid = $2",
-        [Number(req.params.id), authData.userid],
+        "SELECT * FROM questions WHERE questionid = $1 AND userid = $2",
+        [Number(req.params.id), authData.user.userid],
         (error, delResult) => {
-          if (error)
-            return res.send(
+          if (error) {
+            res.send(
               `error was found connecting to the database ${error.message}`
             );
-          if (delResult.rows.length === 0) {
-            return res.send(
+          } else if (delResult.rows.length === 0) {
+            res.send(
               `You do not have permission to delete the question or the question is not in the database`
             );
+          } else {
+            client.query(
+              " DELETE FROM questions WHERE questionid = $1",
+              [Number(req.params.id)],
+              (deletErr, deleteResult) => {
+                if (deletErr) {
+                  res
+                    .status(500)
+                    .send(
+                      `Error was found when querying the server ${
+                        deletErr.message
+                      }`
+                    );
+                } else {
+                  res
+                    .status(200)
+                    .send(`Question was succesfully deleted!.....`);
+                }
+              }
+            );
           }
-          res.send(
-            `the question was deleted from the database ${delResult.rows}`
-          );
         }
       );
       done();
@@ -168,29 +183,38 @@ const postAnswer = (req, res) => {
           client.query(
             "INSERT INTO answers (questionid,userid,response,vote,username,accepted) VALUES($1, $2, $3, $4, $5, $6)",
             [
-              req.params.question_id,
-              authData.userid,
+              req.params.id,
+              authData.user.userid,
               req.body.response,
               0,
-              authData.username,
+              authData.user.username,
               false
             ],
             (error, queResult) => {
-              if (error)
-                return res.send(
-                  `error was found connecting to the database ${err.message}`
-                );
+              if (error) {
+                res
+                  .status(500)
+                  .send(
+                    `error was found connecting to the database ${
+                      error.message
+                    }`
+                  );
+              } else {
+                res.send("Answer was posted succesfully");
+              }
             }
           );
         }
       );
       done();
-      res.send("Answer was posted succesfully");
     });
   });
 };
 
 const acceptAnswer = (req, res) => {
+  if (!req.body.accepted){
+   return res.status(403).send(`Input is required!.....`);
+  }
   Jwt.verify(req.token, "luapnahalobgujnugalo", (tokenErr, authData) => {
     if (tokenErr)
       return res.send(`error verifying your token ${tokenErr.message}`);
@@ -204,10 +228,12 @@ const acceptAnswer = (req, res) => {
         [Number(req.params.qId)],
         (error, result) => {
           if (error)
-            return res.send(`Error connecting to the database! ... ${error}`);
-          if (result.rows.length === 0)
-            return res.send(`The given question wasn't found in the database!`);
-
+            return res
+              .status(500)
+              .send(`Error connecting to the database! ... ${error.message}`);
+          if (result.rows.length === 0) {
+            res.send(`The given question wasn't found in the database!`);
+          }
           client.query(
             "SELECT * FROM  answers WHERE answerid = $1",
             [Number(req.params.aId)],
@@ -218,28 +244,28 @@ const acceptAnswer = (req, res) => {
                     ansErr.message
                   }`
                 );
-              if (ansResult.rows.length === 0)
-                return res.send(
-                  `The given answer wasn't found in the database!`
-                );
-
-              client.query(
-                "UPDATE answers SET accepted = $1 WHERE userid = $2",
-                [req.body.accepted, req.body.user_id],
-                (errUpdate, updateResult) => {
-                  if (errUpdate)
-                    return res.send(
-                      `error was found when connecting to the database ${
-                        errUpdate.message
-                      }`
-                    );
-                  if (updateResult.rows.length === 0)
-                    res.send("You do not have permission to accept the answer");
-                  else {
-                    res.send("you have succesfully accepted the answer");
+              else if (ansResult.rows.length === 0) {
+                res.send(`The given answer wasn't found in the database!`);
+              } else {
+                client.query(
+                  "UPDATE answers SET accepted = $1 WHERE userid = $2",
+                  [req.body.accepted, authData.user.userid],
+                  (errUpdate, updateResult) => {
+                    if (errUpdate){
+                      res
+                      .status(500)
+                      .send(
+                        `error was found when connecting to the database ${
+                          errUpdate.message
+                        }`
+                      );
+                    }
+                    else  {
+                      res.send("you have succesfully accepted the answer");
+                    } 
                   }
-                }
-              );
+                );
+              }
             }
           );
         }

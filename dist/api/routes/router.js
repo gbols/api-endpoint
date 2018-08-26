@@ -17,6 +17,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var router = _express2.default.Router();
 
 router.post("/signup", _user.signUp);
+router.post("/login", _user.logIn);
 router.get("/sigout", _user.signOut);
 router.get("/questions", _questionController.getAllQuestions);
 router.get("/questions/:id", _questionController.getSingleQuestion);

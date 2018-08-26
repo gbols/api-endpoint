@@ -1,5 +1,5 @@
 import express from "express";
-import {signOut,signUp, verifyToken} from '../controllers/user';
+import {signOut,signUp,logIn, verifyToken} from '../controllers/user';
 import {
   getAllQuestions,
   getSingleQuestion,
@@ -12,6 +12,7 @@ import {
 const router = express.Router();
 
 router.post("/signup", signUp);
+router.post("/login", logIn);
 router.get("/sigout", signOut);
 router.get("/questions", getAllQuestions);
 router.get("/questions/:id", getSingleQuestion);
