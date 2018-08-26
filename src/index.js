@@ -7,6 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.get("/", (req, res) => res.json({ message: "Welcome to our StackOverflow Lite! ..." }));
 app.use("/api/v1", Router);
 app.use("/api/v1/auth", Router);
 

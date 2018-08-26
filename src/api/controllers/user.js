@@ -58,7 +58,7 @@ const signUp = (req, res) => {
               const user = userDetailsResult.rows[0];
               // res.json({message: `user succesfully created!.....`});
               Jwt.sign({ user }, "luapnahalobgujnugalo", (err, token) => {
-                res.json({ token, user, message: `User succefully created!....` });
+                res.status(200).json({ token, user, message: `User succefully created!....` });
               });
             }
           }
@@ -101,7 +101,7 @@ const logIn = (req, res) => {
               const user = loginResult.rows[0];
               Jwt.sign({ user }, "luapnahalobgujnugalo", (err, token) => {
                 if(err) return res.status(500).send("Error generating your token");
-                res.json({ token, user, message: `User succefully logged In!....` });
+                res.status(200).json({ token, user, message: `User succefully logged In!....` });
               });
             }
       }

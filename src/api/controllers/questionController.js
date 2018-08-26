@@ -1,11 +1,11 @@
 import { Pool } from "pg";
 import Jwt from "jsonwebtoken";
 
-const connectionstring =
+const connectionString =
   "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
 
 const pool = new Pool({
-  connectionString: connectionstring
+  connectionString
 });
 
 const getAllQuestions = (req, res) => {
@@ -74,6 +74,12 @@ const getSingleQuestion = (req, res) => {
 };
 
 const postQuestion = (req, res) => {
+  if (!req.body.question) {
+    return res.status(403).send(`Missing Input is required!.....`);
+  }
+  if (!req.body.question.trim()) {
+    return res.status(403).send(`Empty Input is required!.....`);
+  }
   Jwt.verify(req.token, "luapnahalobgujnugalo", (tokenErr, authData) => {
     if (tokenErr)
       return res
@@ -96,7 +102,7 @@ const postQuestion = (req, res) => {
                 `error was found runnning the query....! ${postErr.message}`
               );
           } else {
-            res.json({ message: "Question was successfully posted! ....." });
+            res.status(200).json({ message: "Question was successfully posted! ....." });
           }
         }
       );
@@ -157,6 +163,12 @@ const deleteQuestion = (req, res) => {
 };
 
 const postAnswer = (req, res) => {
+  if (!req.body.response) {
+    return res.status(403).send(`Missing Input is required!.....`);
+  }
+  if (!req.body.response.trim()) {
+    return res.status(403).send(`Empty Input is required!.....`);
+  }
   Jwt.verify(req.token, "luapnahalobgujnugalo", (tokenErr, authData) => {
     if (tokenErr)
       return res
@@ -212,8 +224,11 @@ const postAnswer = (req, res) => {
 };
 
 const acceptAnswer = (req, res) => {
-  if (!req.body.accepted){
-   return res.status(403).send(`Input is required!.....`);
+  if (!req.body.accepted) {
+    return res.status(403).send(`Missing Input is required!.....`);
+  }
+  if (!req.body.accepted.trim()) {
+    return res.status(403).send(`Empty Input is required!.....`);
   }
   Jwt.verify(req.token, "luapnahalobgujnugalo", (tokenErr, authData) => {
     if (tokenErr)
@@ -244,25 +259,24 @@ const acceptAnswer = (req, res) => {
                     ansErr.message
                   }`
                 );
-              else if (ansResult.rows.length === 0) {
+              if (ansResult.rows.length === 0) {
                 res.send(`The given answer wasn't found in the database!`);
               } else {
                 client.query(
                   "UPDATE answers SET accepted = $1 WHERE userid = $2",
                   [req.body.accepted, authData.user.userid],
                   (errUpdate, updateResult) => {
-                    if (errUpdate){
+                    if (errUpdate) {
                       res
-                      .status(500)
-                      .send(
-                        `error was found when connecting to the database ${
-                          errUpdate.message
-                        }`
-                      );
-                    }
-                    else  {
+                        .status(500)
+                        .send(
+                          `error was found when connecting to the database ${
+                            errUpdate.message
+                          }`
+                        );
+                    } else {
                       res.send("you have succesfully accepted the answer");
-                    } 
+                    }
                   }
                 );
               }
