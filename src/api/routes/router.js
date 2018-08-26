@@ -1,5 +1,5 @@
 import express from "express";
-import {signOut,signUp} from '../userController/user';
+import {signOut,signUp, verifyToken} from '../controllers/user';
 import {
   getAllQuestions,
   getSingleQuestion,
@@ -15,9 +15,9 @@ router.post("/signup", signUp);
 router.get("/sigout", signOut);
 router.get("/questions", getAllQuestions);
 router.get("/questions/:id", getSingleQuestion);
-router.post("/questions", postQuestion);
-router.delete("/questions/:id", deleteQuestion);
-router.post("/questions/:id/answers", postAnswer);
-router.put("/questions/:qId/answers/:aId", acceptAnswer);
+router.post("/questions", verifyToken,postQuestion);
+router.delete("/questions/:id", verifyToken, deleteQuestion);
+router.post("/questions/:id/answers",verifyToken, postAnswer);
+router.put("/questions/:qId/answers/:aId",verifyToken, acceptAnswer);
 
 export default router;
