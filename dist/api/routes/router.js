@@ -20,7 +20,7 @@ router.post("/signup", _user.signUp);
 router.get("/sigout", _user.signOut);
 router.get("/questions", _questionController.getAllQuestions);
 router.get("/questions/:id", _questionController.getSingleQuestion);
-router.post("/questions", _questionController.postQuestion);
+router.post("/questions", _user.verifyToken, _questionController.postQuestion);
 router.delete("/questions/:id", _user.verifyToken, _questionController.deleteQuestion);
 router.post("/questions/:id/answers", _user.verifyToken, _questionController.postAnswer);
 router.put("/questions/:qId/answers/:aId", _user.verifyToken, _questionController.acceptAnswer);

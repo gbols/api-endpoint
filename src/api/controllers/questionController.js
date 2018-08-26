@@ -2,32 +2,40 @@ import { Pool } from "pg";
 import Jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
-dotenv.config();
+// dotenv.config();
+
+// const pool = new Pool({
+//   user: process.env.USER,
+//   host: process.env.HOST,
+//   database: process.env.DATABASE,
+//   password: process.env.PASSWORD,
+//   port: process.env.PORT,
+//   ssl: process.env.SSL
+// });
+
+const connectionstring =
+  "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
 
 const pool = new Pool({
-  user: process.env.USER,
-  host: process.env.HOST,
-  database: process.env.DATABASE,
-  password: process.env.PASSWORD,
-  port: process.env.PORT,
-  ssl: process.env.SSL
+  connectionString: connectionstring
 });
 
 const getAllQuestions = (req, res) => {
   pool.connect((err, client, done) => {
     if (err) {
-      return res.send("error fetching client from pool", err.message);
+      return res
+        .status(500)
+        .send("error fetching client from pool", err.message);
     }
     client.query("SELECT * FROM questions", (err, result) => {
       if (err) {
-       if (statusCode >= 100 && statusCode < 600)
-         res.status(statusCode);
-          else{
-            res.status(500);
-            }
-          } else{
-            res.send({message:result.rows});
-          }
+        if (statusCode >= 100 && statusCode < 600) res.status(statusCode);
+        else {
+          res.status(500);
+        }
+      } else {
+        res.send({ message: result.rows });
+      }
     });
     done();
   });
@@ -40,7 +48,7 @@ const getSingleQuestion = (req, res) => {
         .status(500)
         .send(`error was found when connecting to the server ${err.message}`);
     client.query(
-      "SELECT * FROM questions WHERE question_id = $1",
+      "SELECT * FROM questions WHERE questionid = $1",
       [Number(req.params.id)],
       (err, result) => {
         if (err)
@@ -51,7 +59,7 @@ const getSingleQuestion = (req, res) => {
           return res.send(`The given question does not exit in the database`);
 
         client.query(
-          "SELECT * FROM answers WHERE question_id = $1",
+          "SELECT * FROM answers WHERE questionid = $1",
           [Number(req.params.id)],
           (error, ansResult) => {
             if (error)
@@ -84,12 +92,13 @@ const postQuestion = (req, res) => {
           .status(500)
           .send(`error was found connecting to the server ${err.message}`);
       client.query(
-        "INSERT INTO questions (question,user_id,username) VALUES($1, $2, $3)",
-        [req.body.question, req.body.user_id, req.body.username],(postErr,postResult) => {
-          if (postErr){
+        "INSERT INTO questions (question,userid,username) VALUES($1, $2, $3)",
+        [req.body.question, authData.userid, authData.username],
+        (postErr, postResult) => {
+          if (postErr) {
             res.status(403).send(`error was found runnning the query....!`);
-          } else{
-            res.json({message:"Question was successfully posted! ....."});
+          } else {
+            res.json({ message: "Question was successfully posted! ....." });
           }
         }
       );
@@ -110,8 +119,8 @@ const deleteQuestion = (req, res) => {
           .status(500)
           .send(`error was found connecting to the server ${err.message}`);
       client.query(
-        "DELETE FROM questions WHERE question_id = $1 AND user_id = $2",
-        [Number(req.params.id), authData.user_id],
+        "DELETE FROM questions WHERE questionid = $1 AND userid = $2",
+        [Number(req.params.id), authData.userid],
         (error, delResult) => {
           if (error)
             return res.send(
@@ -145,7 +154,7 @@ const postAnswer = (req, res) => {
           .send(`error was found when connecting to the server ${err.message}`);
 
       client.query(
-        "SELECT question FROM questions WHERE question_id = $1",
+        "SELECT question FROM questions WHERE questionid = $1",
         [Number(req.params.id)],
         (queErr, result) => {
           if (queErr)
@@ -157,13 +166,13 @@ const postAnswer = (req, res) => {
               `The question with the ID can't be found in the database!...`
             );
           client.query(
-            "INSERT INTO answers (question_id,user_id,response,vote,username,accepted) VALUES($1, $2, $3, $4, $5, $6)",
+            "INSERT INTO answers (questionid,userid,response,vote,username,accepted) VALUES($1, $2, $3, $4, $5, $6)",
             [
-              req.body.question_id,
-              req.body.user_id,
+              req.params.question_id,
+              authData.userid,
               req.body.response,
-              req.body.vote,
-              req.body.username,
+              0,
+              authData.username,
               false
             ],
             (error, queResult) => {
@@ -191,7 +200,7 @@ const acceptAnswer = (req, res) => {
           `error was found when running the request ${err.message}`
         );
       client.query(
-        "SELECT question FROM questions WHERE question_id = $1",
+        "SELECT question FROM questions WHERE questionid = $1",
         [Number(req.params.qId)],
         (error, result) => {
           if (error)
@@ -200,7 +209,7 @@ const acceptAnswer = (req, res) => {
             return res.send(`The given question wasn't found in the database!`);
 
           client.query(
-            "SELECT * FROM  answers WHERE answer_id = $1",
+            "SELECT * FROM  answers WHERE answerid = $1",
             [Number(req.params.aId)],
             (ansErr, ansResult) => {
               if (ansErr)
@@ -215,11 +224,8 @@ const acceptAnswer = (req, res) => {
                 );
 
               client.query(
-                "UPDATE answers SET accepted = $1 WHERE user_id = $2",
-                [
-                  req.body.accepted,
-                  req.body.user_id
-                ],
+                "UPDATE answers SET accepted = $1 WHERE userid = $2",
+                [req.body.accepted, req.body.user_id],
                 (errUpdate, updateResult) => {
                   if (errUpdate)
                     return res.send(
