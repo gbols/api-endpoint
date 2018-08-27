@@ -15,10 +15,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var connectionstring = "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
+var connectionString = "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
 
 var pool = new _pg.Pool({
-  connectionString: connectionstring
+  connectionString: connectionString
 });
 
 var getAllQuestions = function getAllQuestions(req, res) {
@@ -66,6 +66,12 @@ var getSingleQuestion = function getSingleQuestion(req, res) {
 };
 
 var postQuestion = function postQuestion(req, res) {
+  if (!req.body.question) {
+    return res.status(403).send("Missing Input is required!.....");
+  }
+  if (!req.body.question.trim()) {
+    return res.status(403).send("Empty Input is required!.....");
+  }
   _jsonwebtoken2.default.verify(req.token, "luapnahalobgujnugalo", function (tokenErr, authData) {
     if (tokenErr) return res.status(403).send("error verifying your token " + tokenErr.message);
     pool.connect(function (err, client, done) {
@@ -75,7 +81,7 @@ var postQuestion = function postQuestion(req, res) {
           console.log(authData);
           res.status(403).send("error was found runnning the query....! " + postErr.message);
         } else {
-          res.json({ message: "Question was successfully posted! ....." });
+          res.status(200).json({ message: "Question was successfully posted! ....." });
         }
       });
       done();
@@ -109,6 +115,12 @@ var deleteQuestion = function deleteQuestion(req, res) {
 };
 
 var postAnswer = function postAnswer(req, res) {
+  if (!req.body.response) {
+    return res.status(403).send("Missing Input is required!.....");
+  }
+  if (!req.body.response.trim()) {
+    return res.status(403).send("Empty Input is required!.....");
+  }
   _jsonwebtoken2.default.verify(req.token, "luapnahalobgujnugalo", function (tokenErr, authData) {
     if (tokenErr) return res.status(403).send("error verifying your token " + tokenErr.message);
     pool.connect(function (err, client, done) {
@@ -132,7 +144,10 @@ var postAnswer = function postAnswer(req, res) {
 
 var acceptAnswer = function acceptAnswer(req, res) {
   if (!req.body.accepted) {
-    return res.status(403).send("Input is required!.....");
+    return res.status(403).send("Missing Input is required!.....");
+  }
+  if (!req.body.accepted.trim()) {
+    return res.status(403).send("Empty Input is required!.....");
   }
   _jsonwebtoken2.default.verify(req.token, "luapnahalobgujnugalo", function (tokenErr, authData) {
     if (tokenErr) return res.send("error verifying your token " + tokenErr.message);
@@ -144,7 +159,8 @@ var acceptAnswer = function acceptAnswer(req, res) {
           res.send("The given question wasn't found in the database!");
         }
         client.query("SELECT * FROM  answers WHERE answerid = $1", [Number(req.params.aId)], function (ansErr, ansResult) {
-          if (ansErr) return res.send("error was found when connecting to the database " + ansErr.message);else if (ansResult.rows.length === 0) {
+          if (ansErr) return res.send("error was found when connecting to the database " + ansErr.message);
+          if (ansResult.rows.length === 0) {
             res.send("The given answer wasn't found in the database!");
           } else {
             client.query("UPDATE answers SET accepted = $1 WHERE userid = $2", [req.body.accepted, authData.user.userid], function (errUpdate, updateResult) {

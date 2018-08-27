@@ -14,6 +14,7 @@ var _questionController = require("../controllers/questionController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import docs from "../controllers/docs";
 var router = _express2.default.Router();
 
 router.post("/signup", _user.signUp);

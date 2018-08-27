@@ -49,7 +49,7 @@ var signUp = function signUp(req, res) {
           var user = userDetailsResult.rows[0];
           // res.json({message: `user succesfully created!.....`});
           _jsonwebtoken2.default.sign({ user: user }, "luapnahalobgujnugalo", function (err, token) {
-            res.json({ token: token, user: user, message: "User succefully created!...." });
+            res.status(200).json({ token: token, user: user, message: "User succefully created!...." });
           });
         }
       });
@@ -74,7 +74,7 @@ var logIn = function logIn(req, res) {
         var user = loginResult.rows[0];
         _jsonwebtoken2.default.sign({ user: user }, "luapnahalobgujnugalo", function (err, token) {
           if (err) return res.status(500).send("Error generating your token");
-          res.json({ token: token, user: user, message: "User succefully logged In!...." });
+          res.status(200).json({ token: token, user: user, message: "User succefully logged In!...." });
         });
       }
     });

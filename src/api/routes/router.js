@@ -1,5 +1,6 @@
 import express from "express";
-import {signOut,signUp,logIn, verifyToken} from '../controllers/user';
+// import docs from "../controllers/docs";
+import { signOut, signUp, logIn, verifyToken } from "../controllers/user";
 import {
   getAllQuestions,
   getSingleQuestion,
@@ -11,14 +12,15 @@ import {
 
 const router = express.Router();
 
+
 router.post("/signup", signUp);
 router.post("/login", logIn);
 router.get("/sigout", signOut);
 router.get("/questions", getAllQuestions);
 router.get("/questions/:id", getSingleQuestion);
-router.post("/questions", verifyToken,postQuestion);
+router.post("/questions", verifyToken, postQuestion);
 router.delete("/questions/:id", verifyToken, deleteQuestion);
-router.post("/questions/:id/answers",verifyToken, postAnswer);
-router.put("/questions/:qId/answers/:aId",verifyToken, acceptAnswer);
+router.post("/questions/:id/answers", verifyToken, postAnswer);
+router.put("/questions/:qId/answers/:aId", verifyToken, acceptAnswer);
 
 export default router;
