@@ -1,66 +1,148 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
-
 import app from "../src/index";
 
 const should = chai.should();
 
 chai.use(chaiHttp);
 
-describe("/Home Directory", () => {
-  it("it send an ok status and be an array with 3 items", done => {
+describe("Tests for the Get Questions Routes", () => {
+  describe("/GET book", () => {
+    it("it should GET all the questions", done => {
+      chai
+        .request(app)
+        .get("/api/v1/questions")
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a("array");
+          done();
+        });
+    });
+  });
+
+  describe("/GET book", () => {
+    it("it should GET  the first question", done => {
+      chai
+        .request(app)
+        .get("/api/v1/questions/1")
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a("object");
+          done();
+        });
+    });
+  });
+});
+
+describe("Tests for the Post Questions Routes", () => {
+  it("it should not POST a question without question field", done => {
+    const que = {
+      question: ""
+    };
     chai
       .request(app)
-      .get("/api/v1/questions")
+      .post("/api/v1/questions")
+      .send(que)
       .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.be.a("array");
-        res.body.length.should.be.eql(3);
+        res.should.have.status(403);
         done();
       });
   });
 
-  // it("it send an ok status and be an object", done => {
-  //   chai
-  //     .request(app)
-  //     .get("/api/v1/question/2")
-  //     .set("Content-Type", "application/json")
-  //     .set("Accept", "application/json")
-  //     .end((err, res) => {
-  //       res.should.have.status(200);
-  //       res.body.should.be.a("object");
-  //       done();
-  //     });
-  // });
-
-  it("it should be an error", done => {
+  it("it should not POST a question without question field", done => {
+    const que = {
+      question: "Who is the bad guy? "
+    };
     chai
       .request(app)
-      .get("/api/v1/questions/4")
+      .post("/api/v1/questions")
+      .send(que)
       .end((err, res) => {
-        res.should.have.status(404);
+        res.should.have.status(403);
         done();
       });
   });
 });
 
-// describe("/POST request", () => {
-//   it("should post a question in the database", done => {
-//     const que = {
-//       question: "The Lord of the Rings",
-//       answers: []
-//     };
+describe("Test for the login and signup routes", () => {
+  describe("/LOGIN", () => {
+    it("it should not allow a user login without credentials", done => {
+      const log = {
+        username: "",
+        password: "xuyidhi"
+      };
+      chai
+        .request(app)
+        .post("/api/v1/auth/login")
+        .send(log)
+        .end((err, res) => {
+          res.should.have.status(403);
+          done();
+        });
+    });
+  });
 
-//     chai
-//       .request(app)
-//       .post("/api/v1/questions")
-//       .send(que)
-//       .end((err, res) => {
-//         res.should.have.status(200);
-//         res.body.should.be.a("object");
-//         res.body.should.have.property("errors");
-//         res.body.errors.should.have.property("question");
-//         done();
-//       });
-//   });
-// });
+  describe("/LOGIN", () => {
+    it("it should allow a user login with credentials", done => {
+      const log = {
+        username: "gbols",
+        password: "gbolsgbols"
+      };
+      chai
+        .request(app)
+        .post("/api/v1/auth/login")
+        .send(log)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have
+            .property("message")
+            .eql("User succefully logged In!....");
+          res.body.should.have.property("token");
+          res.body.should.have.property("user");
+          done();
+        });
+    });
+  });
+});
+
+describe("Test for the login and signup routes", () => {
+  describe("/SIGNUP", () => {
+    it("it should not allow a user signup without credentials", done => {
+      const sign = {
+        username: "",
+        email: "test@test.com",
+        password: "xuyidhi"
+      };
+      chai
+        .request(app)
+        .post("/api/v1/auth/signup")
+        .send(sign)
+        .end((err, res) => {
+          res.should.have.status(403);
+          done();
+        });
+    });
+  });
+});
+
+describe("Testing for put, delete, post request when token isn't supplied!...", () => {
+  it("it should not POST an answer without token", done => {
+    chai
+      .request(app)
+      .post("/api/v1/questions/1/answers")
+      .end((err, res) => {
+        res.should.have.status(403);
+        done();
+      });
+  });
+
+  it("it should not DELETE an answer without token", done => {
+    chai
+      .request(app)
+      .delete("/api/v1/questions/1")
+      .end((err, res) => {
+        res.should.have.status(403);
+        done();
+      });
+  });
+});
