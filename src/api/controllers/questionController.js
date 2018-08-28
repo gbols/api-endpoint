@@ -289,11 +289,15 @@ const acceptAnswer = (req, res) => {
   });
 };
 
+const notAvailable = (req ,res) => {
+  res.status(404).send(`This page is not available on this application `);
+}
 export {
   getAllQuestions,
   getSingleQuestion,
   postQuestion,
   deleteQuestion,
   postAnswer,
-  acceptAnswer
+  acceptAnswer,
+  notAvailable
 };
