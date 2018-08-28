@@ -1,5 +1,4 @@
 import express from "express";
-// import docs from "../controllers/docs";
 import { signOut, signUp, logIn, verifyToken } from "../controllers/user";
 import {
   getAllQuestions,
@@ -7,7 +6,8 @@ import {
   postQuestion,
   deleteQuestion,
   postAnswer,
-  acceptAnswer
+  acceptAnswer,
+  notAvailable
 } from "../controllers/questionController";
 
 const router = express.Router();
@@ -22,5 +22,8 @@ router.post("/questions", verifyToken, postQuestion);
 router.delete("/questions/:id", verifyToken, deleteQuestion);
 router.post("/questions/:id/answers", verifyToken, postAnswer);
 router.put("/questions/:qId/answers/:aId", verifyToken, acceptAnswer);
+
+router.get(notAvailable);
+
 
 export default router;
