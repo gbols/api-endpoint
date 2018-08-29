@@ -34,39 +34,3 @@ const signUp = e => {
 };
 
 form.addEventListener("submit", signUp, false);
-// form.addEventListener("submit", e => {
-//   e.preventDefault();
-//   const password = form.password.value;
-//   const email = form.email.value;
-//   const confirmPassword = form.confirm.value;
-//   const username = form.username.value;
-//   console.log(confirmPassword, username, email, password);
-//   const validEmail = validateEmail(email);
-//   if (!validEmail) {
-//     console.log(email);
-//      alert("The email provided is invalid");
-//   }
-
-//   if (password !== confirmPassword) {
-//      alert("The passwords provided do not match");
-//   }
-
-//   const url = "https://thegbols.herokuapp.com/auth/signup";
-//   const headers = new Headers({
-//     "Content-Type": "apllication/json",
-//     "Accept-Charset": "utf-8"
-//   });
-
-//   const request = new Request(url, {
-//     method:'POST'
-//   },{
-//     headers
-//   });
-
-//   fetch(request)
-//     .then(response => response.json())
-//     .then(response => console.log(response))
-//     .catch(error => console.log(error));
-
-//     form.reset();
-// });
