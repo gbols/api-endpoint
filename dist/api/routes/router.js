@@ -14,7 +14,6 @@ var _questionController = require("../controllers/questionController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import docs from "../controllers/docs";
 var router = _express2.default.Router();
 
 router.post("/signup", _user.signUp);
@@ -26,5 +25,7 @@ router.post("/questions", _user.verifyToken, _questionController.postQuestion);
 router.delete("/questions/:id", _user.verifyToken, _questionController.deleteQuestion);
 router.post("/questions/:id/answers", _user.verifyToken, _questionController.postAnswer);
 router.put("/questions/:qId/answers/:aId", _user.verifyToken, _questionController.acceptAnswer);
+
+router.get(_questionController.notAvailable);
 
 exports.default = router;
