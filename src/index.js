@@ -16,7 +16,6 @@ const signUp = e => {
   const url = "https://thegbols.herokuapp.com/api/v1/auth/signup";
   const headers = new Headers({
     "Content-Type": "application/json",
-    "Accept-Charset": "utf-8",
     "Accept":"application/json"
   });
   
@@ -28,7 +27,7 @@ const signUp = e => {
   console.log(user);
   fetch(request)
   .then(response => response.json())
-  .then(response => console.log(response))
+  .then(info => console.log(info))
   .catch(error => console.log(error));
   
   form.reset();
