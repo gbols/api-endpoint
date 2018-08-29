@@ -1,40 +1,73 @@
 const form = document.forms.signup;
-const password = forms.password;
-const email = forms.email;
-const confirmPassword = forms.confirm;
-const username = forms.username;
 
-function validateEmail(email) {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-}
-
-const validEmail = validateEmail(email);
-
-form.addEventListener("submit", e => {
+const signUp = e => {
   e.preventDefault();
-  if (!validEmail) {
-    alert("The email provided is invalid");
+  const user = {
+    email: form.email.value,
+    password: form.password.value,
+    confirm: form.confirm.value,
+    username: form.username.value
+  };
+  if (user.password !== user.confirm) {
+    alert("The password you have entered do not match");
   }
-
-  if (password !== confirmPassword) {
-    alert("The passwords provided do not match");
-  }
-
-  const url = "https://thegbols.herokuapp.com/auth/signup";
+  const data = JSON.stringify(user);
+  
+  const url = "https://thegbols.herokuapp.com/api/v1/auth/signup";
   const headers = new Headers({
-    "Content-Type": "apllication/json",
-    "Accept-Charset": "utf-8"
+    "Content-Type": "application/json",
+    "Accept-Charset": "utf-8",
+    "Accept":"application/json"
   });
-
+  
   const request = new Request(url, {
-    method:'POST'
-  },{
-    headers
+    method:'POST',
+    Headers:headers,
+    body:data
   });
-
+  console.log(user);
   fetch(request)
-    .then(response => response.json())
-    .then(response => console.log(response))
-    .catch(error => console.log(error));
-});
+  .then(response => response.json())
+  .then(response => console.log(response))
+  .catch(error => console.log(error));
+  
+  form.reset();
+};
+
+form.addEventListener("submit", signUp, false);
+// form.addEventListener("submit", e => {
+//   e.preventDefault();
+//   const password = form.password.value;
+//   const email = form.email.value;
+//   const confirmPassword = form.confirm.value;
+//   const username = form.username.value;
+//   console.log(confirmPassword, username, email, password);
+//   const validEmail = validateEmail(email);
+//   if (!validEmail) {
+//     console.log(email);
+//      alert("The email provided is invalid");
+//   }
+
+//   if (password !== confirmPassword) {
+//      alert("The passwords provided do not match");
+//   }
+
+//   const url = "https://thegbols.herokuapp.com/auth/signup";
+//   const headers = new Headers({
+//     "Content-Type": "apllication/json",
+//     "Accept-Charset": "utf-8"
+//   });
+
+//   const request = new Request(url, {
+//     method:'POST'
+//   },{
+//     headers
+//   });
+
+//   fetch(request)
+//     .then(response => response.json())
+//     .then(response => console.log(response))
+//     .catch(error => console.log(error));
+
+//     form.reset();
+// });
