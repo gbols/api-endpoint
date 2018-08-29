@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.acceptAnswer = exports.postAnswer = exports.deleteQuestion = exports.postQuestion = exports.getSingleQuestion = exports.getAllQuestions = undefined;
+exports.notAvailable = exports.acceptAnswer = exports.postAnswer = exports.deleteQuestion = exports.postQuestion = exports.getSingleQuestion = exports.getAllQuestions = undefined;
 
 var _pg = require("pg");
 
@@ -178,9 +178,13 @@ var acceptAnswer = function acceptAnswer(req, res) {
   });
 };
 
+var notAvailable = function notAvailable(req, res) {
+  res.status(404).send("This page is not available on this application ");
+};
 exports.getAllQuestions = getAllQuestions;
 exports.getSingleQuestion = getSingleQuestion;
 exports.postQuestion = postQuestion;
 exports.deleteQuestion = deleteQuestion;
 exports.postAnswer = postAnswer;
 exports.acceptAnswer = acceptAnswer;
+exports.notAvailable = notAvailable;

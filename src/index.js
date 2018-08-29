@@ -21,8 +21,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/docs", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/index.html"));
+app.get("/api-docs", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/docs.html"));
 });
 
 app.get('/getjson', docs);
