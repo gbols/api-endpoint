@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
-import docs from "./api/controllers/docs"
 import bodyParser from "body-parser";
+import docs from "./api/controllers/docs";
 import Router from "./api/routes/router";
 
 const app = express();
@@ -15,6 +15,14 @@ app.get("/", (req, res) =>
 );
 
 app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  next();
+
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -25,7 +33,11 @@ app.get("/docs", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
-app.get('/getjson', docs);
+app.get("/api-docs", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/docs.html"));
+});
+
+app.get("/getjson", docs);
 
 app.use("/api/v1", Router);
 app.use("/api", Router);
