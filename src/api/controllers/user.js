@@ -1,12 +1,12 @@
 import { Pool } from "pg";
 import Jwt from "jsonwebtoken";
 import Bcrypt from "bcrypt";
+import dotenv from "dotenv";
 
-const connectionString =
-  "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
+dotenv.config();
 
 const pool = new Pool({
-  connectionString
+  connectionString: process.env.CONNECTION_STRING
 });
 
 function validateEmail(email) {
@@ -82,7 +82,7 @@ const signUp = (req, res) => {
             } else {
               const user = userDetailsResult.rows[0];
               console.log (user);
-              Jwt.sign({ user }, "luapnahalobgujnugalo", (err, token) => {
+              Jwt.sign({ user }, process.env.JWT_SECRET, (err, token) => {
                 res
                   .status(200)
                   .json({
@@ -144,7 +144,7 @@ const logIn = (req, res) => {
             }
           );
           const user = loginResult.rows[0];
-          Jwt.sign({ user }, "luapnahalobgujnugalo", (err, token) => {
+          Jwt.sign({ user }, process.env.JWT_SECRET, (err, token) => {
             if (err) return res.status(500).send("Error generating your token");
             res
               .status(200)

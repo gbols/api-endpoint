@@ -15,12 +15,16 @@ var _bcrypt = require("bcrypt");
 
 var _bcrypt2 = _interopRequireDefault(_bcrypt);
 
+var _dotenv = require("dotenv");
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var connectionString = "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
+_dotenv2.default.config();
 
 var pool = new _pg.Pool({
-  connectionString: connectionString
+  connectionString: process.env.CONNECTION_STRING
 });
 
 function validateEmail(email) {
@@ -69,8 +73,8 @@ var signUp = function signUp(req, res) {
           res.send("Error fetching user from the database...! " + userDetailsErr.message);
         } else {
           var user = userDetailsResult.rows[0];
-          // res.json({message: `user succesfully created!.....`});
-          _jsonwebtoken2.default.sign({ user: user }, "luapnahalobgujnugalo", function (err, token) {
+          console.log(user);
+          _jsonwebtoken2.default.sign({ user: user }, process.env.JWT_SECRET, function (err, token) {
             res.status(200).json({
               token: token,
               user: user,
@@ -102,7 +106,7 @@ var logIn = function logIn(req, res) {
           if (bcryptErr) return res.status(500).send("There was an error decrypting your password!...." + bcryptErr.message);
         });
         var user = loginResult.rows[0];
-        _jsonwebtoken2.default.sign({ user: user }, "luapnahalobgujnugalo", function (err, token) {
+        _jsonwebtoken2.default.sign({ user: user }, process.env.JWT_SECRET, function (err, token) {
           if (err) return res.status(500).send("Error generating your token");
           res.status(200).json({ token: token, user: user, message: "User succefully logged In!...." });
         });

@@ -1,11 +1,11 @@
 import { Pool } from "pg";
 import Jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-const connectionString =
-  "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
+dotenv.config();
 
 const pool = new Pool({
-  connectionString
+  connectionString: process.env.CONNECTION_STRING
 });
 
 const getAllQuestions = (req, res) => {
@@ -80,7 +80,7 @@ const postQuestion = (req, res) => {
   if (!req.body.question.trim()) {
     return res.status(403).send(`Empty Input is required!.....`);
   }
-  Jwt.verify(req.token, "luapnahalobgujnugalo", (tokenErr, authData) => {
+  Jwt.verify(req.token, process.env.JWT_SECRET, (tokenErr, authData) => {
     if (tokenErr)
       return res
         .status(403)
@@ -112,7 +112,7 @@ const postQuestion = (req, res) => {
 };
 
 const deleteQuestion = (req, res) => {
-  Jwt.verify(req.token, "luapnahalobgujnugalo", (tokenErr, authData) => {
+  Jwt.verify(req.token, process.env.JWT_SECRET, (tokenErr, authData) => {
     if (tokenErr)
       return res
         .status(403)
@@ -169,7 +169,7 @@ const postAnswer = (req, res) => {
   if (!req.body.response.trim()) {
     return res.status(403).send(`Empty Input is required!.....`);
   }
-  Jwt.verify(req.token, "luapnahalobgujnugalo", (tokenErr, authData) => {
+  Jwt.verify(req.token, process.env.JWT_SECRET, (tokenErr, authData) => {
     if (tokenErr)
       return res
         .status(403)
@@ -230,7 +230,7 @@ const acceptAnswer = (req, res) => {
   if (!req.body.accepted.trim()) {
     return res.status(403).send(`Empty Input is required!.....`);
   }
-  Jwt.verify(req.token, "luapnahalobgujnugalo", (tokenErr, authData) => {
+  Jwt.verify(req.token, process.env.JWT_SECRET , (tokenErr, authData) => {
     if (tokenErr)
       return res.send(`error verifying your token ${tokenErr.message}`);
     pool.connect((err, client, done) => {

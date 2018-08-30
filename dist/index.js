@@ -33,7 +33,7 @@ app.use(_express2.default.json());
 app.use(_bodyParser2.default.json());
 app.use(_bodyParser2.default.urlencoded({ extended: false }));
 app.get("/", function (req, res) {
-  return res.send({ message: "Welcome to our StackOverflow Lite! ..." });
+  return res.send({ message: "Welcome to StackOverflow Lite! ..." });
 });
 
 app.use(function (req, res, next) {

@@ -11,14 +11,18 @@ var _jsonwebtoken = require("jsonwebtoken");
 
 var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
+var _dotenv = require("dotenv");
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var connectionString = "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
+_dotenv2.default.config();
 
 var pool = new _pg.Pool({
-  connectionString: connectionString
+  connectionString: process.env.CONNECTION_STRING
 });
 
 var getAllQuestions = function getAllQuestions(req, res) {
@@ -72,7 +76,7 @@ var postQuestion = function postQuestion(req, res) {
   if (!req.body.question.trim()) {
     return res.status(403).send("Empty Input is required!.....");
   }
-  _jsonwebtoken2.default.verify(req.token, "luapnahalobgujnugalo", function (tokenErr, authData) {
+  _jsonwebtoken2.default.verify(req.token, process.env.JWT_SECRET, function (tokenErr, authData) {
     if (tokenErr) return res.status(403).send("error verifying your token " + tokenErr.message);
     pool.connect(function (err, client, done) {
       if (err) return res.status(500).send("error was found connecting to the server " + err.message);
@@ -90,7 +94,7 @@ var postQuestion = function postQuestion(req, res) {
 };
 
 var deleteQuestion = function deleteQuestion(req, res) {
-  _jsonwebtoken2.default.verify(req.token, "luapnahalobgujnugalo", function (tokenErr, authData) {
+  _jsonwebtoken2.default.verify(req.token, process.env.JWT_SECRET, function (tokenErr, authData) {
     if (tokenErr) return res.status(403).send("error verifying your token " + tokenErr.message);
     pool.connect(function (err, client, done) {
       if (err) return res.status(500).send("error was found connecting to the server " + err.message);
@@ -121,7 +125,7 @@ var postAnswer = function postAnswer(req, res) {
   if (!req.body.response.trim()) {
     return res.status(403).send("Empty Input is required!.....");
   }
-  _jsonwebtoken2.default.verify(req.token, "luapnahalobgujnugalo", function (tokenErr, authData) {
+  _jsonwebtoken2.default.verify(req.token, process.env.JWT_SECRET, function (tokenErr, authData) {
     if (tokenErr) return res.status(403).send("error verifying your token " + tokenErr.message);
     pool.connect(function (err, client, done) {
       if (err) return res.status(500).send("error was found when connecting to the server " + err.message);
@@ -149,7 +153,7 @@ var acceptAnswer = function acceptAnswer(req, res) {
   if (!req.body.accepted.trim()) {
     return res.status(403).send("Empty Input is required!.....");
   }
-  _jsonwebtoken2.default.verify(req.token, "luapnahalobgujnugalo", function (tokenErr, authData) {
+  _jsonwebtoken2.default.verify(req.token, process.env.JWT_SECRET, function (tokenErr, authData) {
     if (tokenErr) return res.send("error verifying your token " + tokenErr.message);
     pool.connect(function (err, client, done) {
       if (err) return res.send("error was found when running the request " + err.message);
