@@ -48,9 +48,9 @@ For an indepth look at the build and up-to-date documentation, visit the [api do
 * Open a pull request
 
 ### Technology Stack Used
-..* NodeJS
-..* ExpressJS
-..* PostgresSQL
+* NodeJS
+* ExpressJS
+* PostgresSQL
 
 ## Getting Started 
 * Before cloning the repo make sure you have PostgresSQL and Node installed on your local machine
