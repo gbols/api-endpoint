@@ -11,12 +11,20 @@ var _jsonwebtoken = require("jsonwebtoken");
 
 var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
 
+var _bcrypt = require("bcrypt");
+
+var _bcrypt2 = _interopRequireDefault(_bcrypt);
+
+var _dotenv = require("dotenv");
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var connectionString = "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
+_dotenv2.default.config();
 
 var pool = new _pg.Pool({
-  connectionString: connectionString
+  connectionString: process.env.CONNECTION_STRING
 });
 
 function validateEmail(email) {
@@ -24,12 +32,23 @@ function validateEmail(email) {
   return re.test(String(email).toLowerCase());
 }
 
+var validName = function validName(username) {
+  var pattern = /\W/i;
+  return pattern.test(username);
+};
+
 var signUp = function signUp(req, res) {
+  var saltRounds = 1;
   if (!req.body.username || !req.body.password || !req.body.email) {
     return res.status(403).send("missing fields are required");
-  }if (!req.body.username.trim() || !req.body.password.trim() || !req.body.email.trim()) {
+  }
+  if (!req.body.username.trim() || !req.body.password.trim() || !req.body.email.trim()) {
     return res.status(403).send("all inputs field are required");
   }
+
+  var valid = validName(req.body.username);
+  if (valid) return res.status(403).send("Username can't contain wild characters!...");
+
   var validEmail = validateEmail(req.body.email);
   if (!validEmail) res.send("Please Input a valid email address");
 
@@ -41,15 +60,26 @@ var signUp = function signUp(req, res) {
       if (userErr) return res.sendStatus(500);
       // .send(`Error connecting to database ${userErr.message}`);
       if (userResult.rows.length !== 0) return res.send("User with credentials already exits in the database");
-      client.query("INSERT INTO users(username, email, password) VALUES($1, $2, $3)", [req.body.username, req.body.email, req.body.password]);
+      _bcrypt2.default.hash(req.body.password, saltRounds, function (err, hash) {
+        if (err) return res.status(200).json({
+          message: "There was an error hashing your password!..." + err.message
+        });
+
+        client.query("INSERT INTO users(username, email, password) VALUES($1, $2, $3)", [req.body.username, req.body.email, hash]);
+      });
+
       client.query("SELECT * FROM users WHERE username = $1 AND email = $2 AND password = $3", [req.body.username, req.body.email, req.body.password], function (userDetailsErr, userDetailsResult) {
         if (userDetailsErr) {
           res.send("Error fetching user from the database...! " + userDetailsErr.message);
         } else {
           var user = userDetailsResult.rows[0];
-          // res.json({message: `user succesfully created!.....`});
-          _jsonwebtoken2.default.sign({ user: user }, "luapnahalobgujnugalo", function (err, token) {
-            res.status(200).json({ token: token, user: user, message: "User succefully created!...." });
+          console.log(user);
+          _jsonwebtoken2.default.sign({ user: user }, process.env.JWT_SECRET, function (err, token) {
+            res.status(200).json({
+              token: token,
+              user: user,
+              message: "User succefully created!...."
+            });
           });
         }
       });
@@ -67,12 +97,16 @@ var logIn = function logIn(req, res) {
   }
   pool.connect(function (err, client, done) {
     if (err) return res.status(500).send("error connecting to the sever " + err.message);
-    client.query("SELECT * FROM users WHERE username = $1 AND password = $2", [req.body.username, req.body.password], function (loginErr, loginResult) {
-      if (loginErr) return res.status(500).send("There was an error connecting to the database " + loginErr.message);else if (loginResult.rows.length === 0) {
+    client.query("SELECT * FROM users WHERE username = $1", [req.body.username], function (loginErr, loginResult) {
+      if (loginErr) return res.status(500).send("There was an error connecting to the database " + loginErr.message);
+      if (loginResult.rows.length === 0) {
         res.status(403).send("user does not have an account you need to sign up!....");
       } else {
+        _bcrypt2.default.compare(req.body.password, loginResult.rows[0].password, function (bcryptErr, bcryptResult) {
+          if (bcryptErr) return res.status(500).send("There was an error decrypting your password!...." + bcryptErr.message);
+        });
         var user = loginResult.rows[0];
-        _jsonwebtoken2.default.sign({ user: user }, "luapnahalobgujnugalo", function (err, token) {
+        _jsonwebtoken2.default.sign({ user: user }, process.env.JWT_SECRET, function (err, token) {
           if (err) return res.status(500).send("Error generating your token");
           res.status(200).json({ token: token, user: user, message: "User succefully logged In!...." });
         });

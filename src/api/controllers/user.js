@@ -1,11 +1,12 @@
 import { Pool } from "pg";
 import Jwt from "jsonwebtoken";
+import Bcrypt from "bcrypt";
+import dotenv from "dotenv";
 
-const connectionString =
-  "postgres://pdyqtaaezaoqrn:efae001f55f6323aa1eb5a1ae1a7c8f13d96cf25f5a0d5e44a6c5ccd1902cb4b@ec2-54-235-94-36.compute-1.amazonaws.com:5432/dcima2je7js83h?ssl=true";
+dotenv.config();
 
 const pool = new Pool({
-  connectionString: connectionString
+  connectionString: process.env.CONNECTION_STRING
 });
 
 function validateEmail(email) {
@@ -13,16 +14,28 @@ function validateEmail(email) {
   return re.test(String(email).toLowerCase());
 }
 
+const validName = username => {
+  const pattern = /\W/i;
+  return pattern.test(username);
+};
+
 const signUp = (req, res) => {
+  const saltRounds = 1;
   if (!req.body.username || !req.body.password || !req.body.email) {
     return res.status(403).send("missing fields are required");
-  } if (
+  }
+  if (
     !req.body.username.trim() ||
     !req.body.password.trim() ||
     !req.body.email.trim()
   ) {
     return res.status(403).send("all inputs field are required");
   }
+
+  const valid = validName(req.body.username);
+  if (valid)
+    return res.status(403).send("Username can't contain wild characters!...");
+
   const validEmail = validateEmail(req.body.email);
   if (!validEmail) res.send("Please Input a valid email address");
 
@@ -40,10 +53,22 @@ const signUp = (req, res) => {
           return res.send(
             `User with credentials already exits in the database`
           );
-        client.query(
-          "INSERT INTO users(username, email, password) VALUES($1, $2, $3)",
-          [req.body.username, req.body.email, req.body.password]
-        );
+        Bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+          if (err)
+            return res
+              .status(200)
+              .json({
+                message: `There was an error hashing your password!...${
+                  err.message
+                }`
+              });
+
+          client.query(
+            "INSERT INTO users(username, email, password) VALUES($1, $2, $3)",
+            [req.body.username, req.body.email, hash]
+          );
+        });
+
         client.query(
           "SELECT * FROM users WHERE username = $1 AND email = $2 AND password = $3",
           [req.body.username, req.body.email, req.body.password],
@@ -56,9 +81,15 @@ const signUp = (req, res) => {
               );
             } else {
               const user = userDetailsResult.rows[0];
-              // res.json({message: `user succesfully created!.....`});
-              Jwt.sign({ user }, "luapnahalobgujnugalo", (err, token) => {
-                res.status(200).json({ token, user, message: `User succefully created!....` });
+              console.log (user);
+              Jwt.sign({ user }, process.env.JWT_SECRET, (err, token) => {
+                res
+                  .status(200)
+                  .json({
+                    token,
+                    user,
+                    message: `User succefully created!....`
+                  });
               });
             }
           }
@@ -72,7 +103,7 @@ const signUp = (req, res) => {
 const logIn = (req, res) => {
   if (!req.body.username || !req.body.password) {
     return res.status(403).send("missing fields are required");
-  }  
+  }
   if (!req.body.username.trim() || !req.body.password.trim()) {
     return res.status(403).send("all input fields are required");
   }
@@ -82,8 +113,8 @@ const logIn = (req, res) => {
         .status(500)
         .send(`error connecting to the sever ${err.message}`);
     client.query(
-      "SELECT * FROM users WHERE username = $1 AND password = $2",
-      [req.body.username, req.body.password],
+      "SELECT * FROM users WHERE username = $1",
+      [req.body.username],
       (loginErr, loginResult) => {
         if (loginErr)
           return res
@@ -93,17 +124,33 @@ const logIn = (req, res) => {
                 loginErr.message
               }`
             );
-        else if (loginResult.rows.length === 0)
-          { res
+        if (loginResult.rows.length === 0) {
+          res
             .status(403)
-            .send(`user does not have an account you need to sign up!....`);}
-            else{
-              const user = loginResult.rows[0];
-              Jwt.sign({ user }, "luapnahalobgujnugalo", (err, token) => {
-                if(err) return res.status(500).send("Error generating your token");
-                res.status(200).json({ token, user, message: `User succefully logged In!....` });
-              });
+            .send(`user does not have an account you need to sign up!....`);
+        } else {
+          Bcrypt.compare(
+            req.body.password,
+            loginResult.rows[0].password,
+            (bcryptErr, bcryptResult) => {
+              if (bcryptErr)
+                return res
+                  .status(500)
+                  .send(
+                    `There was an error decrypting your password!....${
+                      bcryptErr.message
+                    }`
+                  );
             }
+          );
+          const user = loginResult.rows[0];
+          Jwt.sign({ user }, process.env.JWT_SECRET, (err, token) => {
+            if (err) return res.status(500).send("Error generating your token");
+            res
+              .status(200)
+              .json({ token, user, message: `User succefully logged In!....` });
+          });
+        }
       }
     );
     done();

@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.get("/", (req, res) =>
-  res.send({ message: "Welcome to our StackOverflow Lite! ..." })
+  res.send({ message: "Welcome to StackOverflow Lite! ..." })
 );
 
 app.use((req, res, next) => {
@@ -29,8 +29,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/docs", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/index.html"));
+app.get("/api-docs", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/docs.html"));
 });
 
 app.get("/api-docs", (req, res) => {
