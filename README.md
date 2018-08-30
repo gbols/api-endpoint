@@ -60,4 +60,4 @@ For an indepth look at the build and up-to-date documentation, visit the [api do
 ```>$ cd develop```
 * Install all required dependencies ny running 
 ```>$ npm install```
-* Once the installation is complete make sure ot connect the neccesary varialbles.
+* Once the installation is complete make sure to connect the neccesary variables.
