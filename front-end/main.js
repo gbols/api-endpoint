@@ -30,7 +30,7 @@ if (!info.message){
 console.log("error signing in!....");
 } else{
   localStorage.setItem('jwToken',info.token);
-  location.assign ("./index.html");
+  location.assign ("../index.html");
 }
 })
 .catch(error => console.log(error));
