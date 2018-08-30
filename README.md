@@ -53,11 +53,11 @@ For an indepth look at the build and up-to-date documentation, visit the [api do
 ..* PostgresSQL
 
 ## Getting Started 
-..* Before cloning the repo make sure you have PostgresSQL and Node installed on your local machine
-..* Clone the repo to your local machine
+* Before cloning the repo make sure you have PostgresSQL and Node installed on your local machine
+* Clone the repo to your local machine
 ```>$ git clone https://github.com/gbols/api-endpoint/tree/develop```
-..* Change the directory into the develop directory
+* Change the directory into the develop directory
 ```>$ cd develop```
-..* Install all required dependencies ny running 
+* Install all required dependencies ny running 
 ```>$ npm install```
-..* Once the installation is complete make sure ot connect the neccesary varialbles.
+* Once the installation is complete make sure ot connect the neccesary varialbles.
